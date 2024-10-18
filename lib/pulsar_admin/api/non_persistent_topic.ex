@@ -10,6 +10,234 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
   import PulsarAdmin.RequestBuilder
 
   @doc """
+  Analyse a subscription, by scanning all the unprocessed messages
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Subscription
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (ResetCursorData): messageId to start the analysis
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_analyze_subscription_backlog(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_analyze_subscription_backlog(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/analyzeBacklog")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Trigger a compaction operation on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_compact(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_compact(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compaction")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get the status of a compaction operation for a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.LongRunningProcessStatus.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_compaction_status(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LongRunningProcessStatus.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_compaction_status(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compaction")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.LongRunningProcessStatus},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Create missed partitions of an existing partitioned topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_create_missed_partitions(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_create_missed_partitions(connection, tenant, namespace, topic, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/createMissedPartitions")
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Create a non-partitioned topic.
+  This is the only REST endpoint from which non-partitioned topics could be created.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (%{optional(String.t) &#x3D;&gt; String.t}): Key value pair properties for the topic metadata
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_create_non_partitioned_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_create_non_partitioned_topic(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
   Create a partitioned topic.
   It needs to be called before creating a producer on a partitioned topic.
 
@@ -59,6 +287,1026 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
   end
 
   @doc """
+  Create a subscription on the topic.
+  Creates a subscription on the topic at the specified message id
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `subscription_name` (String.t): Subscription to create position on
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:replicated` (boolean()): Is replicated required to perform this operation
+    - `:body` (ResetCursorData): messageId where to create the subscription. It can be 'latest', 'earliest' or (ledgerId:entryId)
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_create_subscription(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_create_subscription(connection, tenant, namespace, topic, subscription_name, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :replicated => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{subscription_name}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {400, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Delete deduplicationSnapshotInterval config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_delete_deduplication_snapshot_interval(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_delete_deduplication_snapshot_interval(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationSnapshotInterval")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set delayed delivery messages config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_delete_delayed_delivery_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_delete_delayed_delivery_policies(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/delayedDelivery")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Delete inactive topic policies on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_delete_inactive_topic_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_delete_inactive_topic_policies(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/inactiveTopicPolicies")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Delete max unacked messages per consumer config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_delete_max_unacked_messages_on_consumer(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_delete_max_unacked_messages_on_consumer(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnConsumer")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Delete max unacked messages per subscription config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_delete_max_unacked_messages_on_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_delete_max_unacked_messages_on_subscription(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnSubscription")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Delete a partitioned topic.
+  It will also delete all the partitions of the topic if it exists.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:force` (boolean()): Stop all producer/consumer/replicator and delete topic forcefully
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_delete_partitioned_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_delete_partitioned_topic(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :force => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/partitions")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Delete shadow topics for a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_delete_shadow_topics(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_delete_shadow_topics(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/shadowTopics")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Delete a subscription.
+  The subscription cannot be deleted if delete is not forcefully and there are any active consumers attached to it. Force delete ignores connected consumers and deletes subscription by explicitly closing them.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Subscription to be deleted
+  - `opts` (keyword): Optional parameters
+    - `:force` (boolean()): Disconnect and close all consumers and delete subscription forcefully
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_delete_subscription(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_delete_subscription(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :force => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Delete a topic.
+  The topic cannot be deleted if delete is not forcefully and there's any active subscription or producer connected to the it. Force delete ignores connected clients and deletes topic by explicitly closing them.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:force` (boolean()): Stop all producer/consumer/replicator and delete topic forcefully
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_delete_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_delete_topic(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :force => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Examine a specific message on a topic by position relative to the earliest or the latest message.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:initialPosition` (String.t): Relative start position to examine message.It can be 'latest' or 'earliest'
+    - `:messagePosition` (integer()): The position of messages (default 1)
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_examine_message(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_examine_message(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :initialPosition => :query,
+      :messagePosition => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/examinemessage")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {307, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Expiry messages on all subscriptions of topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `expire_time_in_seconds` (integer()): Expires beyond the specified number of seconds
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_expire_messages_for_all_subscriptions(Tesla.Env.client, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_expire_messages_for_all_subscriptions(connection, tenant, namespace, topic, expire_time_in_seconds, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/all_subscription/expireMessages/#{expire_time_in_seconds}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Expiry messages on a topic subscription.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Subscription to be Expiry messages on
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (ResetCursorData): messageId to reset back to (ledgerId:entryId)
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_expire_topic_messages(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_expire_topic_messages(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/expireMessages")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Expiry messages on a topic subscription.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Subscription to be Expiry messages on
+  - `expire_time_in_seconds` (integer()): Expires beyond the specified number of seconds
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_expire_topic_messages_0(Tesla.Env.client, String.t, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_expire_topic_messages_0(connection, tenant, namespace, topic, sub_name, expire_time_in_seconds, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/expireMessages/#{expire_time_in_seconds}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get autoSubscriptionCreation info in a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_auto_subscription_creation(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_auto_subscription_creation(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/autoSubscriptionCreation")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get estimated backlog for offline topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.PersistentOfflineTopicStats.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_backlog(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PersistentOfflineTopicStats.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_backlog(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlog")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.PersistentOfflineTopicStats},
+      {404, false},
+      {412, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get backlog quota map on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_backlog_quota_map(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_backlog_quota_map(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :authoritative => :query,
+      :isGlobal => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlogQuotaMap")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {403, false},
+      {404, false},
+      {405, false}
+    ])
+  end
+
+  @doc """
+  Calculate backlog size by a message ID (in bytes).
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_backlog_size_by_message_id(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_backlog_size_by_message_id(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlogSize")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get compaction threshold configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_compaction_threshold(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_compaction_threshold(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compactionThreshold")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get deduplication configuration of a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, boolean()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_deduplication(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_deduplication(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationEnabled")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {405, false}
+    ])
+  end
+
+  @doc """
+  Get deduplicationSnapshotInterval config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_deduplication_snapshot_interval(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_deduplication_snapshot_interval(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationSnapshotInterval")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get delayed delivery messages config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:applied` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.DelayedDeliveryPolicies.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_delayed_delivery_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DelayedDeliveryPolicies.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_delayed_delivery_policies(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :applied => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/delayedDelivery")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.DelayedDeliveryPolicies},
+      {403, false},
+      {404, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get dispatch rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.DispatchRateImpl.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRateImpl.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/dispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.DispatchRateImpl},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
   Get entry filters for a topic.
 
   ### Parameters
@@ -98,6 +1346,50 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
       {200, PulsarAdmin.Model.EntryFilters},
       {403, false},
       {404, false}
+    ])
+  end
+
+  @doc """
+  Get inactive topic policies on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.InactiveTopicPolicies.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_inactive_topic_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.InactiveTopicPolicies.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_inactive_topic_policies(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/inactiveTopicPolicies")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.InactiveTopicPolicies},
+      {403, false},
+      {404, false},
+      {500, false}
     ])
   end
 
@@ -143,6 +1435,51 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
       {404, false},
       {412, false},
       {500, false}
+    ])
+  end
+
+  @doc """
+  Return the last commit message id of topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.MessageIdAdv.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_last_message_id(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.MessageIdAdv.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_last_message_id(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/lastMessageId")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.MessageIdAdv},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
     ])
   end
 
@@ -224,6 +1561,537 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
       {412, false},
       {500, false},
       {503, false}
+    ])
+  end
+
+  @doc """
+  Get the stored topic metadata.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.PartitionedManagedLedgerInfo.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_managed_ledger_info(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PartitionedManagedLedgerInfo.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_managed_ledger_info(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/internal-info")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.PartitionedManagedLedgerInfo},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get maxConsumers config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:applied` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_max_consumers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_max_consumers(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :applied => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumers")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get max consumers per subscription configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_max_consumers_per_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_max_consumers_per_subscription(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumersPerSubscription")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get maxMessageSize config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_max_message_size(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_max_message_size(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxMessageSize")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get maxProducers config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_max_producers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_max_producers(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxProducers")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get maxSubscriptionsPerTopic config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_max_subscriptions_per_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_max_subscriptions_per_topic(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxSubscriptionsPerTopic")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get max unacked messages per consumer config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_max_unacked_messages_on_consumer(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_max_unacked_messages_on_consumer(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnConsumer")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get max unacked messages per subscription config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_max_unacked_messages_on_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_max_unacked_messages_on_subscription(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnSubscription")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get message by its messageId.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `ledger_id` (integer()): The ledger id
+  - `entry_id` (integer()): The entry id
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_message_by_id(Tesla.Env.client, String.t, String.t, String.t, integer(), integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_message_by_id(connection, tenant, namespace, topic, ledger_id, entry_id, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/ledger/#{ledger_id}/entry/#{entry_id}")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get message ID published at or just after this absolute timestamp (in ms).
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `timestamp` (integer()): Specify the timestamp
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.MessageIdAdv.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_message_id_by_timestamp(Tesla.Env.client, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.MessageIdAdv.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_message_id_by_timestamp(connection, tenant, namespace, topic, timestamp, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/messageid/#{timestamp}")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.MessageIdAdv},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get message TTL in seconds for a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_message_ttl(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_message_ttl(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/messageTTL")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {405, false}
+    ])
+  end
+
+  @doc """
+  Get offload policies on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.OffloadPoliciesImpl.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_offload_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.OffloadPoliciesImpl.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_offload_policies(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offloadPolicies")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.OffloadPoliciesImpl},
+      {403, false},
+      {404, false},
+      {500, false}
     ])
   end
 
@@ -326,6 +2194,1232 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
   end
 
   @doc """
+  Get the stats-internal for the partitioned topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.PartitionedTopicInternalStats.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_partitioned_stats_internal(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PartitionedTopicInternalStats.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_partitioned_stats_internal(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/partitioned-internalStats")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.PartitionedTopicInternalStats},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get the list of partitioned topics under a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `opts` (keyword): Optional parameters
+    - `:includeSystemTopic` (boolean()): Include system topic
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_partitioned_topic_list(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_partitioned_topic_list(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :includeSystemTopic => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/partitioned")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get permissions on a topic.
+  Retrieve the effective permissions for a topic. These permissions are defined by the permissions set at thenamespace level combined (union) with any eventual specific permission set on the topic.Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<AuthAction>>. Please refer to this structure for details.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_permissions_on_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_permissions_on_topic(connection, tenant, namespace, topic, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/permissions")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get configuration of persistence policies for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.PersistencePolicies.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_persistence(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PersistencePolicies.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_persistence(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/persistence")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.PersistencePolicies},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get topic properties.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_properties(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_properties(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/properties")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get publish rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.PublishRate.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_publish_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PublishRate.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_publish_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/publishRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.PublishRate},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get replicated subscription status on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Name of subscription
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_replicated_subscription_status(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_replicated_subscription_status(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/replicatedSubscriptionStatus")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get the replication clusters for a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_replication_clusters(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_replication_clusters(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replication")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {403, false},
+      {404, false},
+      {405, false}
+    ])
+  end
+
+  @doc """
+  Get replicatorDispatchRate config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:applied` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.DispatchRate.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_replicator_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_replicator_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :applied => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replicatorDispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.DispatchRate},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get retention configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:applied` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.RetentionPolicies.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_retention(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.RetentionPolicies.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_retention(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :applied => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/retention")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.RetentionPolicies},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get schema compatibility strategy on a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the cluster
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, String.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_schema_compatibility_strategy(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_schema_compatibility_strategy(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaCompatibilityStrategy")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {307, false},
+      {403, false},
+      {404, false},
+      {405, false}
+    ])
+  end
+
+  @doc """
+  Get schema validation enforced flag for topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, boolean()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_schema_validation_enforced(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_schema_validation_enforced(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaValidationEnforced")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get the shadow topic list for a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_shadow_topics(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_shadow_topics(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/shadowTopics")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {403, false},
+      {404, false},
+      {405, false}
+    ])
+  end
+
+  @doc """
+  Get the stats for the topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:getPreciseBacklog` (boolean()): If return precise backlog or imprecise backlog
+    - `:subscriptionBacklogSize` (boolean()): If return backlog size for each subscription, require locking on ledger so be careful not to use when there's heavy traffic.
+    - `:getEarliestTimeInBacklog` (boolean()): If return time of the earliest message in backlog
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.PersistentTopicStats.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_stats(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, PulsarAdmin.Model.PersistentTopicStats.t} | {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_stats(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :getPreciseBacklog => :query,
+      :subscriptionBacklogSize => :query,
+      :getEarliestTimeInBacklog => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/stats")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.PersistentTopicStats},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get subscribe rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.SubscribeRate.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_subscribe_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.SubscribeRate.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_subscribe_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscribeRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.SubscribeRate},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get subscription message dispatch rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.DispatchRate.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_subscription_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_subscription_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionDispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.DispatchRate},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get message dispatch rate configuration for specified subscription.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `sub_name` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.DispatchRate.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_subscription_level_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_subscription_level_dispatch_rate(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :applied => :query,
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/#{sub_name}/dispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.DispatchRate},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Return all the properties on the given subscription
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Subscription
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_subscription_properties(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_subscription_properties(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/properties")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Get is enable sub type fors specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_subscription_types_enabled(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_subscription_types_enabled(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionTypesEnabled")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get the list of persistent subscriptions for a given topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_get_subscriptions(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def non_persistent_topics_get_subscriptions(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptions")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Grant a new permission to a role on a single topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `role` (String.t): Client role to which grant permissions
+  - `opts` (keyword): Optional parameters
+    - `:body` ([String.t]): Actions to be granted (produce,functions,consume)
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_grant_permissions_on_topic(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_grant_permissions_on_topic(connection, tenant, namespace, topic, role, opts \\ []) do
+    optional_params = %{
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/permissions/#{role}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Offload a prefix of a topic to long term storage
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.OffloadProcessStatus.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_offload_status(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.OffloadProcessStatus.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_offload_status(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offload")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.OffloadProcessStatus},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Peek nth message on a topic subscription.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Subscribed message expired
+  - `message_position` (integer()): The number of messages (default 1)
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_peek_nth_message(Tesla.Env.client, String.t, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_peek_nth_message(connection, tenant, namespace, topic, sub_name, message_position, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/position/#{message_position}")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Remove autoSubscriptionCreation ina a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_auto_subscription_creation(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_auto_subscription_creation(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/autoSubscriptionCreation")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove a backlog quota policy from a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:backlogQuotaType` (String.t): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_backlog_quota(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_backlog_quota(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :backlogQuotaType => :query,
+      :authoritative => :query,
+      :isGlobal => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlogQuota")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove compaction threshold configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_compaction_threshold(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_compaction_threshold(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compactionThreshold")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove deduplication configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:authoritative` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_deduplication(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_deduplication(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationEnabled")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove message dispatch rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/dispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
   Remove entry filters for specified topic.
 
   ### Parameters
@@ -355,6 +3449,1243 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
       |> method(:delete)
       |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/entryFilters")
       |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove maxConsumers config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_max_consumers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_max_consumers(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumers")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove max consumers per subscription configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_max_consumers_per_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_max_consumers_per_subscription(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumersPerSubscription")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove maxMessageSize config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_max_message_size(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_max_message_size(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxMessageSize")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove maxProducers config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_max_producers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_max_producers(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxProducers")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove maxSubscriptionsPerTopic config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_max_subscriptions_per_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_max_subscriptions_per_topic(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxSubscriptionsPerTopic")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove message TTL in seconds for a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:authoritative` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_message_ttl(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_message_ttl(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/messageTTL")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Delete offload policies on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_offload_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_offload_policies(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offloadPolicies")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Remove configuration of persistence policies for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_persistence(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_persistence(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/persistence")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove the key in properties on the given topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:key` (String.t): 
+    - `:authoritative` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_properties(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_properties(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :key => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/properties")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Remove message publish rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_publish_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_publish_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/publishRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove the replication clusters from a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:backlogQuotaType` (String.t): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_replication_clusters(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_replication_clusters(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :backlogQuotaType => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replication")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove replicatorDispatchRate config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_replicator_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_replicator_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replicatorDispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove retention configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_retention(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_retention(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/retention")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove schema compatibility strategy on a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (String.t): Strategy used to check the compatibility of new schema
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_schema_compatibility_strategy(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_schema_compatibility_strategy(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaCompatibilityStrategy")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {403, false},
+      {404, false},
+      {405, false}
+    ])
+  end
+
+  @doc """
+  Remove subscribe rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (SubscribeRate): Subscribe rate for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_subscribe_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_subscribe_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscribeRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove subscription message dispatch rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_subscription_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_subscription_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionDispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove message dispatch rate configuration for specified subscription.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `sub_name` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_subscription_level_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_subscription_level_dispatch_rate(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/#{sub_name}/dispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove subscription types enabled for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_remove_subscription_types_enabled(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_remove_subscription_types_enabled(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionTypesEnabled")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Reset subscription to message position closest to absolute timestamp (in ms).
+  It fence cursor and disconnects all active consumers before resetting cursor.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Subscription to reset position on
+  - `timestamp` (integer()): the timestamp to reset back
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_reset_cursor(Tesla.Env.client, String.t, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_reset_cursor(connection, tenant, namespace, topic, sub_name, timestamp, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/resetcursor/#{timestamp}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Reset subscription to message position closest to given position.
+  It fence cursor and disconnects all active consumers before resetting cursor.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Subscription to reset position on
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (ResetCursorData): messageId to reset back to (ledgerId:entryId)
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_reset_cursor_on_position(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_reset_cursor_on_position(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/resetcursor")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Revoke permissions on a topic.
+  Revoke permissions to a role on a single topic. If the permission was not set at the topiclevel, but rather at the namespace level, this operation will return an error (HTTP status code 412).
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `role` (String.t): Client role to which grant permissions
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_revoke_permissions_on_topic(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_revoke_permissions_on_topic(connection, tenant, namespace, topic, role, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/permissions/#{role}")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Override namespace's allowAutoSubscriptionCreation setting for a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): 
+    - `:body` (AutoSubscriptionCreationOverrideImpl): Settings for automatic subscription creation
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_auto_subscription_creation(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_auto_subscription_creation(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/autoSubscriptionCreation")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set a backlog quota for a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:backlogQuotaType` (String.t): 
+    - `:body` (BacklogQuotaImpl): backlog quota policies for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_backlog_quota(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_backlog_quota(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :backlogQuotaType => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlogQuota")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set compaction threshold configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:body` (integer()): Dispatch rate for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_compaction_threshold(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_compaction_threshold(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compactionThreshold")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set deduplication enabled on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (boolean()): DeduplicationEnabled policies for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_deduplication(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_deduplication(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationEnabled")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false}
+    ])
+  end
+
+  @doc """
+  Set deduplicationSnapshotInterval config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (integer()): Interval to take deduplication snapshot for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_deduplication_snapshot_interval(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_deduplication_snapshot_interval(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationSnapshotInterval")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set delayed delivery messages config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (DelayedDeliveryPolicies): Delayed delivery policies for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_delayed_delivery_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_delayed_delivery_policies(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/delayedDelivery")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set message dispatch rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:body` (DispatchRateImpl): Dispatch rate for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/dispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
       |> Enum.into([])
 
     connection
@@ -411,6 +4742,1336 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
       {404, false},
       {405, false},
       {409, false}
+    ])
+  end
+
+  @doc """
+  Set inactive topic policies on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:body` (InactiveTopicPolicies): inactive topic policies for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_inactive_topic_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_inactive_topic_policies(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/inactiveTopicPolicies")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set maxConsumers config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (integer()): The max consumers of the topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_max_consumers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_max_consumers(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumers")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set max consumers per subscription configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (integer()): Dispatch rate for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_max_consumers_per_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_max_consumers_per_subscription(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumersPerSubscription")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set maxMessageSize config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (integer()): The max message size of the topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_max_message_size(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_max_message_size(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxMessageSize")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set maxProducers config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:body` (integer()): The max producers of the topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_max_producers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_max_producers(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxProducers")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set maxSubscriptionsPerTopic config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (integer()): The max subscriptions of the topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_max_subscriptions_per_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_max_subscriptions_per_topic(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxSubscriptionsPerTopic")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set max unacked messages per consumer config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (integer()): Max unacked messages on consumer policies for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_max_unacked_messages_on_consumer(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_max_unacked_messages_on_consumer(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnConsumer")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set max unacked messages per subscription config on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (integer()): Max unacked messages on subscription policies for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_max_unacked_messages_on_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_max_unacked_messages_on_subscription(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnSubscription")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set message TTL in seconds for a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `message_ttl` (integer()): TTL in seconds for the specified topic
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_message_ttl(Tesla.Env.client, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_message_ttl(connection, tenant, namespace, topic, message_ttl, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/messageTTL")
+      |> add_param(:query, :messageTTL, message_ttl)
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set offload policies on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:body` (OffloadPoliciesImpl): Offload policies for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_offload_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_offload_policies(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offloadPolicies")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set configuration of persistence policies for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:body` (PersistencePolicies): Bookkeeper persistence policies for specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_persistence(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_persistence(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/persistence")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {400, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set message publish rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (PublishRate): Dispatch rate for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_publish_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_publish_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/publishRate")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Enable or disable a replicated subscription on a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Name of subscription
+  - `body` (boolean()): Whether to enable replicated subscription
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_replicated_subscription_status(Tesla.Env.client, String.t, String.t, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_replicated_subscription_status(connection, tenant, namespace, topic, sub_name, body, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/replicatedSubscriptionStatus")
+      |> add_param(:body, :body, body)
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Set the replication clusters for a topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `body` ([String.t]): List of replication clusters
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_replication_clusters(Tesla.Env.client, String.t, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_replication_clusters(connection, tenant, namespace, topic, body, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replication")
+      |> add_param(:body, :body, body)
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set replicatorDispatchRate config for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (DispatchRateImpl): Replicator dispatch rate of the topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_replicator_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_replicator_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replicatorDispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set retention configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:body` (RetentionPolicies): Retention policies for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_retention(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_retention(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/retention")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set schema compatibility strategy on a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (String.t): Strategy used to check the compatibility of new schema
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_schema_compatibility_strategy(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_schema_compatibility_strategy(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaCompatibilityStrategy")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {403, false},
+      {404, false},
+      {405, false}
+    ])
+  end
+
+  @doc """
+  Set schema validation enforced flag on topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `body` (boolean()): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_schema_validation_enforced(Tesla.Env.client, String.t, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_schema_validation_enforced(connection, tenant, namespace, topic, body, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaValidationEnforced")
+      |> add_param(:body, :body, body)
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set shadow topic list for a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `body` ([String.t]): List of shadow topics
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_shadow_topics(Tesla.Env.client, String.t, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_shadow_topics(connection, tenant, namespace, topic, body, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/shadowTopics")
+      |> add_param(:body, :body, body)
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set subscribe rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` (SubscribeRate): Subscribe rate for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_subscribe_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_subscribe_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscribeRate")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set subscription message dispatch rate configuration for specified topic.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:body` (DispatchRateImpl): Subscription message dispatch rate for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_subscription_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_subscription_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionDispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set message dispatch rate configuration for specified subscription.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `sub_name` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:isGlobal` (boolean()): 
+    - `:body` (DispatchRateImpl): Subscription message dispatch rate for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_subscription_level_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_subscription_level_dispatch_rate(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :isGlobal => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/#{sub_name}/dispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set is enable sub types for specified topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:isGlobal` (boolean()): 
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+    - `:body` ([String.t]): Enable sub types for the specified topic
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_set_subscription_types_enabled(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_set_subscription_types_enabled(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :isGlobal => :query,
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionTypesEnabled")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Skip all messages on a topic subscription.
+  Completely clears the backlog on the subscription.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Name of subscription
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_skip_all_messages(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_skip_all_messages(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/skip_all")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Skipping messages on a topic subscription.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `sub_name` (String.t): Name of subscription
+  - `num_messages` (integer()): The number of messages to skip
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_skip_messages(Tesla.Env.client, String.t, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_skip_messages(connection, tenant, namespace, topic, sub_name, num_messages, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/skip/#{num_messages}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Terminate a topic. A topic that is terminated will not accept any more messages to be published and will let consumer to drain existing messages in backlog
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.MessageIdAdv.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_terminate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.MessageIdAdv.t} | {:error, Tesla.Env.t}
+  def non_persistent_topics_terminate(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/terminate")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.MessageIdAdv},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {406, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Terminate all partitioned topic. A topic that is terminated will not accept any more messages to be published and will let consumer to drain existing messages in backlog
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_terminate_partitioned_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_terminate_partitioned_topic(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/terminate/partitions")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Offload a prefix of a topic to long term storage
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_trigger_offload(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_trigger_offload(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offload")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {400, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {409, false},
+      {412, false},
+      {500, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+   Trim a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Specify the tenant
+  - `namespace` (String.t): Specify the namespace
+  - `topic` (String.t): Specify topic name
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec non_persistent_topics_trim_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_trim_topic(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/trim")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {405, false},
+      {412, false},
+      {500, false},
+      {503, false}
     ])
   end
 
@@ -499,5667 +6160,6 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
   end
 
   @doc """
-  Analyse a subscription, by scanning all the unprocessed messages
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Subscription
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (ResetCursorData): messageId to start the analysis
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_analyze_subscription_backlog(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_analyze_subscription_backlog(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/analyzeBacklog")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Trigger a compaction operation on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_compact(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_compact(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:put)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compaction")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get the status of a compaction operation for a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.LongRunningProcessStatus.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_compaction_status(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LongRunningProcessStatus.t} | {:error, Tesla.Env.t}
-  def persistent_topics_compaction_status(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compaction")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.LongRunningProcessStatus},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Create missed partitions of an existing partitioned topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_create_missed_partitions(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_create_missed_partitions(connection, tenant, namespace, topic, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/createMissedPartitions")
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Create a non-partitioned topic.
-  This is the only REST endpoint from which non-partitioned topics could be created.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (%{optional(String.t) &#x3D;&gt; String.t}): Key value pair properties for the topic metadata
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_create_non_partitioned_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_create_non_partitioned_topic(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:put)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Create a subscription on the topic.
-  Creates a subscription on the topic at the specified message id
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `subscription_name` (String.t): Subscription to create position on
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:replicated` (boolean()): Is replicated required to perform this operation
-    - `:body` (ResetCursorData): messageId where to create the subscription. It can be 'latest', 'earliest' or (ledgerId:entryId)
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_create_subscription(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_create_subscription(connection, tenant, namespace, topic, subscription_name, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :replicated => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:put)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{subscription_name}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {400, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Delete deduplicationSnapshotInterval config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_delete_deduplication_snapshot_interval(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_delete_deduplication_snapshot_interval(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationSnapshotInterval")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set delayed delivery messages config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_delete_delayed_delivery_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_delete_delayed_delivery_policies(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/delayedDelivery")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Delete inactive topic policies on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_delete_inactive_topic_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_delete_inactive_topic_policies(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/inactiveTopicPolicies")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Delete max unacked messages per consumer config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_delete_max_unacked_messages_on_consumer(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_delete_max_unacked_messages_on_consumer(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnConsumer")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Delete max unacked messages per subscription config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_delete_max_unacked_messages_on_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_delete_max_unacked_messages_on_subscription(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnSubscription")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Delete a partitioned topic.
-  It will also delete all the partitions of the topic if it exists.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:force` (boolean()): Stop all producer/consumer/replicator and delete topic forcefully
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_delete_partitioned_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_delete_partitioned_topic(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :force => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/partitions")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Delete shadow topics for a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_delete_shadow_topics(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_delete_shadow_topics(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/shadowTopics")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Delete a subscription.
-  The subscription cannot be deleted if delete is not forcefully and there are any active consumers attached to it. Force delete ignores connected consumers and deletes subscription by explicitly closing them.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Subscription to be deleted
-  - `opts` (keyword): Optional parameters
-    - `:force` (boolean()): Disconnect and close all consumers and delete subscription forcefully
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_delete_subscription(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_delete_subscription(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :force => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Delete a topic.
-  The topic cannot be deleted if delete is not forcefully and there's any active subscription or producer connected to the it. Force delete ignores connected clients and deletes topic by explicitly closing them.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:force` (boolean()): Stop all producer/consumer/replicator and delete topic forcefully
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_delete_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_delete_topic(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :force => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Examine a specific message on a topic by position relative to the earliest or the latest message.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:initialPosition` (String.t): Relative start position to examine message.It can be 'latest' or 'earliest'
-    - `:messagePosition` (integer()): The position of messages (default 1)
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_examine_message(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_examine_message(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :initialPosition => :query,
-      :messagePosition => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/examinemessage")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {307, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Expiry messages on all subscriptions of topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `expire_time_in_seconds` (integer()): Expires beyond the specified number of seconds
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_expire_messages_for_all_subscriptions(Tesla.Env.client, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_expire_messages_for_all_subscriptions(connection, tenant, namespace, topic, expire_time_in_seconds, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/all_subscription/expireMessages/#{expire_time_in_seconds}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Expiry messages on a topic subscription.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Subscription to be Expiry messages on
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (ResetCursorData): messageId to reset back to (ledgerId:entryId)
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_expire_topic_messages(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_expire_topic_messages(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/expireMessages")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Expiry messages on a topic subscription.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Subscription to be Expiry messages on
-  - `expire_time_in_seconds` (integer()): Expires beyond the specified number of seconds
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_expire_topic_messages_0(Tesla.Env.client, String.t, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_expire_topic_messages_0(connection, tenant, namespace, topic, sub_name, expire_time_in_seconds, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/expireMessages/#{expire_time_in_seconds}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get autoSubscriptionCreation info in a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_auto_subscription_creation(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_auto_subscription_creation(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/autoSubscriptionCreation")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get estimated backlog for offline topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.PersistentOfflineTopicStats.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_backlog(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PersistentOfflineTopicStats.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_backlog(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlog")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.PersistentOfflineTopicStats},
-      {404, false},
-      {412, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get backlog quota map on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_backlog_quota_map(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_get_backlog_quota_map(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :authoritative => :query,
-      :isGlobal => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlogQuotaMap")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {403, false},
-      {404, false},
-      {405, false}
-    ])
-  end
-
-  @doc """
-  Calculate backlog size by a message ID (in bytes).
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_backlog_size_by_message_id(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_backlog_size_by_message_id(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:put)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlogSize")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get compaction threshold configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_compaction_threshold(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_compaction_threshold(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compactionThreshold")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get deduplication configuration of a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, boolean()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_deduplication(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_deduplication(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationEnabled")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {405, false}
-    ])
-  end
-
-  @doc """
-  Get deduplicationSnapshotInterval config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_deduplication_snapshot_interval(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_deduplication_snapshot_interval(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationSnapshotInterval")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get delayed delivery messages config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:applied` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.DelayedDeliveryPolicies.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_delayed_delivery_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DelayedDeliveryPolicies.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_delayed_delivery_policies(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :applied => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/delayedDelivery")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.DelayedDeliveryPolicies},
-      {403, false},
-      {404, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get dispatch rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.DispatchRateImpl.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRateImpl.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/dispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.DispatchRateImpl},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get inactive topic policies on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.InactiveTopicPolicies.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_inactive_topic_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.InactiveTopicPolicies.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_inactive_topic_policies(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/inactiveTopicPolicies")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.InactiveTopicPolicies},
-      {403, false},
-      {404, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Return the last commit message id of topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.MessageIdAdv.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_last_message_id(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.MessageIdAdv.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_last_message_id(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/lastMessageId")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.MessageIdAdv},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get the stored topic metadata.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.PartitionedManagedLedgerInfo.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_managed_ledger_info(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PartitionedManagedLedgerInfo.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_managed_ledger_info(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/internal-info")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.PartitionedManagedLedgerInfo},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get maxConsumers config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:applied` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_max_consumers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_max_consumers(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :applied => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumers")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get max consumers per subscription configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_max_consumers_per_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_max_consumers_per_subscription(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumersPerSubscription")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get maxMessageSize config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_max_message_size(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_max_message_size(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxMessageSize")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get maxProducers config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_max_producers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_max_producers(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxProducers")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get maxSubscriptionsPerTopic config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_max_subscriptions_per_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_max_subscriptions_per_topic(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxSubscriptionsPerTopic")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get max unacked messages per consumer config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_max_unacked_messages_on_consumer(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_max_unacked_messages_on_consumer(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnConsumer")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get max unacked messages per subscription config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_max_unacked_messages_on_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_max_unacked_messages_on_subscription(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnSubscription")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get message by its messageId.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `ledger_id` (integer()): The ledger id
-  - `entry_id` (integer()): The entry id
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_message_by_id(Tesla.Env.client, String.t, String.t, String.t, integer(), integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_get_message_by_id(connection, tenant, namespace, topic, ledger_id, entry_id, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/ledger/#{ledger_id}/entry/#{entry_id}")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get message ID published at or just after this absolute timestamp (in ms).
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `timestamp` (integer()): Specify the timestamp
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.MessageIdAdv.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_message_id_by_timestamp(Tesla.Env.client, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.MessageIdAdv.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_message_id_by_timestamp(connection, tenant, namespace, topic, timestamp, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/messageid/#{timestamp}")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.MessageIdAdv},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get message TTL in seconds for a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_message_ttl(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_message_ttl(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/messageTTL")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {405, false}
-    ])
-  end
-
-  @doc """
-  Get offload policies on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.OffloadPoliciesImpl.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_offload_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.OffloadPoliciesImpl.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_offload_policies(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offloadPolicies")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.OffloadPoliciesImpl},
-      {403, false},
-      {404, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get the stats-internal for the partitioned topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.PartitionedTopicInternalStats.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_partitioned_stats_internal(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PartitionedTopicInternalStats.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_partitioned_stats_internal(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/partitioned-internalStats")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.PartitionedTopicInternalStats},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get the list of partitioned topics under a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `opts` (keyword): Optional parameters
-    - `:includeSystemTopic` (boolean()): Include system topic
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_partitioned_topic_list(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def persistent_topics_get_partitioned_topic_list(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :includeSystemTopic => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/partitioned")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get permissions on a topic.
-  Retrieve the effective permissions for a topic. These permissions are defined by the permissions set at thenamespace level combined (union) with any eventual specific permission set on the topic.Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<AuthAction>>. Please refer to this structure for details.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_permissions_on_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_get_permissions_on_topic(connection, tenant, namespace, topic, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/permissions")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get configuration of persistence policies for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.PersistencePolicies.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_persistence(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PersistencePolicies.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_persistence(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/persistence")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.PersistencePolicies},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get topic properties.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_properties(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_get_properties(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/properties")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get publish rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.PublishRate.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_publish_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PublishRate.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_publish_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/publishRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.PublishRate},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get replicated subscription status on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Name of subscription
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_replicated_subscription_status(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_get_replicated_subscription_status(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/replicatedSubscriptionStatus")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get the replication clusters for a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_replication_clusters(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def persistent_topics_get_replication_clusters(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replication")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {403, false},
-      {404, false},
-      {405, false}
-    ])
-  end
-
-  @doc """
-  Get replicatorDispatchRate config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:applied` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.DispatchRate.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_replicator_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_replicator_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :applied => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replicatorDispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.DispatchRate},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get retention configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:applied` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.RetentionPolicies.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_retention(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.RetentionPolicies.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_retention(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :applied => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/retention")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.RetentionPolicies},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get schema compatibility strategy on a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the cluster
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, String.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_schema_compatibility_strategy(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_schema_compatibility_strategy(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaCompatibilityStrategy")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {307, false},
-      {403, false},
-      {404, false},
-      {405, false}
-    ])
-  end
-
-  @doc """
-  Get schema validation enforced flag for topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, boolean()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_schema_validation_enforced(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
-  def persistent_topics_get_schema_validation_enforced(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaValidationEnforced")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get the shadow topic list for a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_shadow_topics(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def persistent_topics_get_shadow_topics(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/shadowTopics")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {403, false},
-      {404, false},
-      {405, false}
-    ])
-  end
-
-  @doc """
-  Get the stats for the topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:getPreciseBacklog` (boolean()): If return precise backlog or imprecise backlog
-    - `:subscriptionBacklogSize` (boolean()): If return backlog size for each subscription, require locking on ledger so be careful not to use when there's heavy traffic.
-    - `:getEarliestTimeInBacklog` (boolean()): If return time of the earliest message in backlog
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.PersistentTopicStats.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_stats(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, PulsarAdmin.Model.PersistentTopicStats.t} | {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_get_stats(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :getPreciseBacklog => :query,
-      :subscriptionBacklogSize => :query,
-      :getEarliestTimeInBacklog => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/stats")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.PersistentTopicStats},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get subscribe rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.SubscribeRate.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_subscribe_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.SubscribeRate.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_subscribe_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscribeRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.SubscribeRate},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get subscription message dispatch rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.DispatchRate.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_subscription_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_subscription_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionDispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.DispatchRate},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get message dispatch rate configuration for specified subscription.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `sub_name` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.DispatchRate.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_subscription_level_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
-  def persistent_topics_get_subscription_level_dispatch_rate(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :applied => :query,
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/#{sub_name}/dispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.DispatchRate},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Return all the properties on the given subscription
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Subscription
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_subscription_properties(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_get_subscription_properties(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/properties")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Get is enable sub type fors specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_subscription_types_enabled(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def persistent_topics_get_subscription_types_enabled(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionTypesEnabled")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get the list of persistent subscriptions for a given topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_get_subscriptions(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def persistent_topics_get_subscriptions(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptions")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Grant a new permission to a role on a single topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `role` (String.t): Client role to which grant permissions
-  - `opts` (keyword): Optional parameters
-    - `:body` ([String.t]): Actions to be granted (produce,functions,consume)
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_grant_permissions_on_topic(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_grant_permissions_on_topic(connection, tenant, namespace, topic, role, opts \\ []) do
-    optional_params = %{
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/permissions/#{role}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Offload a prefix of a topic to long term storage
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.OffloadProcessStatus.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_offload_status(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.OffloadProcessStatus.t} | {:error, Tesla.Env.t}
-  def persistent_topics_offload_status(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offload")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.OffloadProcessStatus},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Peek nth message on a topic subscription.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Subscribed message expired
-  - `message_position` (integer()): The number of messages (default 1)
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_peek_nth_message(Tesla.Env.client, String.t, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_peek_nth_message(connection, tenant, namespace, topic, sub_name, message_position, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/position/#{message_position}")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Remove autoSubscriptionCreation ina a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_auto_subscription_creation(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_auto_subscription_creation(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/autoSubscriptionCreation")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove a backlog quota policy from a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:backlogQuotaType` (String.t): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_backlog_quota(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_backlog_quota(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :backlogQuotaType => :query,
-      :authoritative => :query,
-      :isGlobal => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlogQuota")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove compaction threshold configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_compaction_threshold(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_compaction_threshold(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compactionThreshold")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove deduplication configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:authoritative` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_deduplication(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_deduplication(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationEnabled")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove message dispatch rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/dispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove maxConsumers config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_max_consumers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_max_consumers(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumers")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove max consumers per subscription configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_max_consumers_per_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_max_consumers_per_subscription(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumersPerSubscription")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove maxMessageSize config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_max_message_size(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_max_message_size(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxMessageSize")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove maxProducers config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_max_producers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_max_producers(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxProducers")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove maxSubscriptionsPerTopic config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_max_subscriptions_per_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_max_subscriptions_per_topic(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxSubscriptionsPerTopic")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove message TTL in seconds for a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:authoritative` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_message_ttl(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_message_ttl(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/messageTTL")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Delete offload policies on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_offload_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_offload_policies(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offloadPolicies")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Remove configuration of persistence policies for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_persistence(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_persistence(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/persistence")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove the key in properties on the given topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:key` (String.t): 
-    - `:authoritative` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_properties(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_properties(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :key => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/properties")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Remove message publish rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_publish_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_publish_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/publishRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove the replication clusters from a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:backlogQuotaType` (String.t): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_replication_clusters(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_replication_clusters(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :backlogQuotaType => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replication")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove replicatorDispatchRate config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_replicator_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_replicator_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replicatorDispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove retention configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_retention(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_retention(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/retention")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Remove schema compatibility strategy on a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (String.t): Strategy used to check the compatibility of new schema
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_schema_compatibility_strategy(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_schema_compatibility_strategy(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaCompatibilityStrategy")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {403, false},
-      {404, false},
-      {405, false}
-    ])
-  end
-
-  @doc """
-  Remove subscribe rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (SubscribeRate): Subscribe rate for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_subscribe_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_subscribe_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscribeRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove subscription message dispatch rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_subscription_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_subscription_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionDispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove message dispatch rate configuration for specified subscription.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `sub_name` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_subscription_level_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_subscription_level_dispatch_rate(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/#{sub_name}/dispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove subscription types enabled for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_remove_subscription_types_enabled(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_remove_subscription_types_enabled(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionTypesEnabled")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Reset subscription to message position closest to absolute timestamp (in ms).
-  It fence cursor and disconnects all active consumers before resetting cursor.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Subscription to reset position on
-  - `timestamp` (integer()): the timestamp to reset back
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_reset_cursor(Tesla.Env.client, String.t, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_reset_cursor(connection, tenant, namespace, topic, sub_name, timestamp, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/resetcursor/#{timestamp}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Reset subscription to message position closest to given position.
-  It fence cursor and disconnects all active consumers before resetting cursor.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Subscription to reset position on
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (ResetCursorData): messageId to reset back to (ledgerId:entryId)
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_reset_cursor_on_position(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_reset_cursor_on_position(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/resetcursor")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Revoke permissions on a topic.
-  Revoke permissions to a role on a single topic. If the permission was not set at the topiclevel, but rather at the namespace level, this operation will return an error (HTTP status code 412).
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `role` (String.t): Client role to which grant permissions
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_revoke_permissions_on_topic(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_revoke_permissions_on_topic(connection, tenant, namespace, topic, role, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/permissions/#{role}")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Override namespace's allowAutoSubscriptionCreation setting for a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): 
-    - `:body` (AutoSubscriptionCreationOverrideImpl): Settings for automatic subscription creation
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_auto_subscription_creation(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_auto_subscription_creation(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/autoSubscriptionCreation")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set a backlog quota for a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:backlogQuotaType` (String.t): 
-    - `:body` (BacklogQuotaImpl): backlog quota policies for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_backlog_quota(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_backlog_quota(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :backlogQuotaType => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/backlogQuota")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set compaction threshold configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:body` (integer()): Dispatch rate for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_compaction_threshold(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_compaction_threshold(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/compactionThreshold")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set deduplication enabled on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (boolean()): DeduplicationEnabled policies for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_deduplication(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_deduplication(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationEnabled")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false}
-    ])
-  end
-
-  @doc """
-  Set deduplicationSnapshotInterval config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (integer()): Interval to take deduplication snapshot for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_deduplication_snapshot_interval(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_deduplication_snapshot_interval(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/deduplicationSnapshotInterval")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set delayed delivery messages config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (DelayedDeliveryPolicies): Delayed delivery policies for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_delayed_delivery_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_delayed_delivery_policies(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/delayedDelivery")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set message dispatch rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:body` (DispatchRateImpl): Dispatch rate for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/dispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set inactive topic policies on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:body` (InactiveTopicPolicies): inactive topic policies for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_inactive_topic_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_inactive_topic_policies(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/inactiveTopicPolicies")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set maxConsumers config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (integer()): The max consumers of the topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_max_consumers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_max_consumers(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumers")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set max consumers per subscription configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (integer()): Dispatch rate for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_max_consumers_per_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_max_consumers_per_subscription(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxConsumersPerSubscription")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set maxMessageSize config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (integer()): The max message size of the topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_max_message_size(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_max_message_size(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxMessageSize")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set maxProducers config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:body` (integer()): The max producers of the topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_max_producers(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_max_producers(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxProducers")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set maxSubscriptionsPerTopic config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (integer()): The max subscriptions of the topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_max_subscriptions_per_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_max_subscriptions_per_topic(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxSubscriptionsPerTopic")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set max unacked messages per consumer config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (integer()): Max unacked messages on consumer policies for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_max_unacked_messages_on_consumer(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_max_unacked_messages_on_consumer(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnConsumer")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set max unacked messages per subscription config on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (integer()): Max unacked messages on subscription policies for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_max_unacked_messages_on_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_max_unacked_messages_on_subscription(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/maxUnackedMessagesOnSubscription")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set message TTL in seconds for a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `message_ttl` (integer()): TTL in seconds for the specified topic
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_message_ttl(Tesla.Env.client, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_message_ttl(connection, tenant, namespace, topic, message_ttl, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/messageTTL")
-      |> add_param(:query, :messageTTL, message_ttl)
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set offload policies on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:body` (OffloadPoliciesImpl): Offload policies for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_offload_policies(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_offload_policies(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offloadPolicies")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set configuration of persistence policies for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:body` (PersistencePolicies): Bookkeeper persistence policies for specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_persistence(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_persistence(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/persistence")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {400, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set message publish rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (PublishRate): Dispatch rate for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_publish_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_publish_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/publishRate")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Enable or disable a replicated subscription on a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Name of subscription
-  - `body` (boolean()): Whether to enable replicated subscription
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_replicated_subscription_status(Tesla.Env.client, String.t, String.t, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_replicated_subscription_status(connection, tenant, namespace, topic, sub_name, body, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/replicatedSubscriptionStatus")
-      |> add_param(:body, :body, body)
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Set the replication clusters for a topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `body` ([String.t]): List of replication clusters
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_replication_clusters(Tesla.Env.client, String.t, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_replication_clusters(connection, tenant, namespace, topic, body, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replication")
-      |> add_param(:body, :body, body)
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set replicatorDispatchRate config for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (DispatchRateImpl): Replicator dispatch rate of the topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_replicator_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_replicator_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/replicatorDispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set retention configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:body` (RetentionPolicies): Retention policies for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_retention(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_retention(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/retention")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set schema compatibility strategy on a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (String.t): Strategy used to check the compatibility of new schema
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_schema_compatibility_strategy(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_schema_compatibility_strategy(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:put)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaCompatibilityStrategy")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {403, false},
-      {404, false},
-      {405, false}
-    ])
-  end
-
-  @doc """
-  Set schema validation enforced flag on topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `body` (boolean()): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_schema_validation_enforced(Tesla.Env.client, String.t, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_schema_validation_enforced(connection, tenant, namespace, topic, body, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/schemaValidationEnforced")
-      |> add_param(:body, :body, body)
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set shadow topic list for a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `body` ([String.t]): List of shadow topics
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_shadow_topics(Tesla.Env.client, String.t, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_shadow_topics(connection, tenant, namespace, topic, body, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:put)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/shadowTopics")
-      |> add_param(:body, :body, body)
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set subscribe rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` (SubscribeRate): Subscribe rate for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_subscribe_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_subscribe_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscribeRate")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set subscription message dispatch rate configuration for specified topic.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:body` (DispatchRateImpl): Subscription message dispatch rate for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_subscription_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_subscription_dispatch_rate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionDispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set message dispatch rate configuration for specified subscription.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `sub_name` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:isGlobal` (boolean()): 
-    - `:body` (DispatchRateImpl): Subscription message dispatch rate for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_subscription_level_dispatch_rate(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_subscription_level_dispatch_rate(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :isGlobal => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/#{sub_name}/dispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set is enable sub types for specified topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:isGlobal` (boolean()): 
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-    - `:body` ([String.t]): Enable sub types for the specified topic
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_set_subscription_types_enabled(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_set_subscription_types_enabled(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :isGlobal => :query,
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscriptionTypesEnabled")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Skip all messages on a topic subscription.
-  Completely clears the backlog on the subscription.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Name of subscription
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_skip_all_messages(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_skip_all_messages(connection, tenant, namespace, topic, sub_name, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/skip_all")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Skipping messages on a topic subscription.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `sub_name` (String.t): Name of subscription
-  - `num_messages` (integer()): The number of messages to skip
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_skip_messages(Tesla.Env.client, String.t, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_skip_messages(connection, tenant, namespace, topic, sub_name, num_messages, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/subscription/#{sub_name}/skip/#{num_messages}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Terminate a topic. A topic that is terminated will not accept any more messages to be published and will let consumer to drain existing messages in backlog
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.MessageIdAdv.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_terminate(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.MessageIdAdv.t} | {:error, Tesla.Env.t}
-  def persistent_topics_terminate(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/terminate")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.MessageIdAdv},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {406, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Terminate all partitioned topic. A topic that is terminated will not accept any more messages to be published and will let consumer to drain existing messages in backlog
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_terminate_partitioned_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_terminate_partitioned_topic(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/terminate/partitions")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Offload a prefix of a topic to long term storage
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_trigger_offload(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_trigger_offload(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:put)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/offload")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {400, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {409, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-   Trim a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Specify the tenant
-  - `namespace` (String.t): Specify the namespace
-  - `topic` (String.t): Specify topic name
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): Whether leader broker redirected this call to this broker. For internal use.
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec persistent_topics_trim_topic(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_trim_topic(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/non-persistent/#{tenant}/#{namespace}/#{topic}/trim")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {405, false},
-      {412, false},
-      {500, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
   Increment partitions of an existing partitioned topic.
   It increments partitions of existing partitioned-topic
 
@@ -6180,8 +6180,8 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec persistent_topics_update_partitioned_topic(Tesla.Env.client, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_update_partitioned_topic(connection, tenant, namespace, topic, body, opts \\ []) do
+  @spec non_persistent_topics_update_partitioned_topic(Tesla.Env.client, String.t, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_update_partitioned_topic(connection, tenant, namespace, topic, body, opts \\ []) do
     optional_params = %{
       :updateLocalTopicOnly => :query,
       :authoritative => :query,
@@ -6228,8 +6228,8 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec persistent_topics_update_properties(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_update_properties(connection, tenant, namespace, topic, opts \\ []) do
+  @spec non_persistent_topics_update_properties(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_update_properties(connection, tenant, namespace, topic, opts \\ []) do
     optional_params = %{
       :authoritative => :query,
       :body => :body
@@ -6276,8 +6276,8 @@ defmodule PulsarAdmin.Api.NonPersistentTopic do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec persistent_topics_update_subscription_properties(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def persistent_topics_update_subscription_properties(connection, tenant, namespace, topic, sub_name, opts \\ []) do
+  @spec non_persistent_topics_update_subscription_properties(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def non_persistent_topics_update_subscription_properties(connection, tenant, namespace, topic, sub_name, opts \\ []) do
     optional_params = %{
       :authoritative => :query,
       :body => :body

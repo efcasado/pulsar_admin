@@ -6150,7 +6150,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get the list of partitioned topics under a namespace.
-      operationId: PersistentTopics_getPartitionedTopicList
+      operationId: NonPersistentTopics_getPartitionedTopicList
       parameters:
       - name: tenant
         in: path
@@ -6252,7 +6252,7 @@ paths:
       summary: Create a non-partitioned topic.
       description: This is the only REST endpoint from which non-partitioned topics
         could be created.
-      operationId: PersistentTopics_createNonPartitionedTopic
+      operationId: NonPersistentTopics_createNonPartitionedTopic
       parameters:
       - name: tenant
         in: path
@@ -6325,7 +6325,7 @@ paths:
       description: The topic cannot be deleted if delete is not forcefully and there's
         any active subscription or producer connected to the it. Force delete ignores
         connected clients and deletes topic by explicitly closing them.
-      operationId: PersistentTopics_deleteTopic
+      operationId: NonPersistentTopics_deleteTopic
       parameters:
       - name: tenant
         in: path
@@ -6385,7 +6385,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Expiry messages on all subscriptions of topic.
-      operationId: PersistentTopics_expireMessagesForAllSubscriptions
+      operationId: NonPersistentTopics_expireMessagesForAllSubscriptions
       parameters:
       - name: tenant
         in: path
@@ -6454,7 +6454,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get autoSubscriptionCreation info in a topic
-      operationId: PersistentTopics_getAutoSubscriptionCreation
+      operationId: NonPersistentTopics_getAutoSubscriptionCreation
       parameters:
       - name: tenant
         in: path
@@ -6510,7 +6510,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Override namespace's allowAutoSubscriptionCreation setting for a topic
-      operationId: PersistentTopics_setAutoSubscriptionCreation
+      operationId: NonPersistentTopics_setAutoSubscriptionCreation
       parameters:
       - name: tenant
         in: path
@@ -6566,7 +6566,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove autoSubscriptionCreation ina a topic.
-      operationId: PersistentTopics_removeAutoSubscriptionCreation
+      operationId: NonPersistentTopics_removeAutoSubscriptionCreation
       parameters:
       - name: tenant
         in: path
@@ -6617,7 +6617,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get estimated backlog for offline topic.
-      operationId: PersistentTopics_getBacklog
+      operationId: NonPersistentTopics_getBacklog
       parameters:
       - name: tenant
         in: path
@@ -6665,7 +6665,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set a backlog quota for a topic.
-      operationId: PersistentTopics_setBacklogQuota
+      operationId: NonPersistentTopics_setBacklogQuota
       parameters:
       - name: tenant
         in: path
@@ -6734,7 +6734,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove a backlog quota policy from a topic.
-      operationId: PersistentTopics_removeBacklogQuota
+      operationId: NonPersistentTopics_removeBacklogQuota
       parameters:
       - name: tenant
         in: path
@@ -6792,7 +6792,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get backlog quota map on a topic.
-      operationId: PersistentTopics_getBacklogQuotaMap
+      operationId: NonPersistentTopics_getBacklogQuotaMap
       parameters:
       - name: tenant
         in: path
@@ -6850,7 +6850,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Calculate backlog size by a message ID (in bytes).
-      operationId: PersistentTopics_getBacklogSizeByMessageId
+      operationId: NonPersistentTopics_getBacklogSizeByMessageId
       parameters:
       - name: tenant
         in: path
@@ -6905,7 +6905,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get the status of a compaction operation for a topic.
-      operationId: PersistentTopics_compactionStatus
+      operationId: NonPersistentTopics_compactionStatus
       parameters:
       - name: tenant
         in: path
@@ -6968,7 +6968,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Trigger a compaction operation on a topic.
-      operationId: PersistentTopics_compact
+      operationId: NonPersistentTopics_compact
       parameters:
       - name: tenant
         in: path
@@ -7032,7 +7032,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get compaction threshold configuration for specified topic.
-      operationId: PersistentTopics_getCompactionThreshold
+      operationId: NonPersistentTopics_getCompactionThreshold
       parameters:
       - name: tenant
         in: path
@@ -7091,7 +7091,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set compaction threshold configuration for specified topic.
-      operationId: PersistentTopics_setCompactionThreshold
+      operationId: NonPersistentTopics_setCompactionThreshold
       parameters:
       - name: tenant
         in: path
@@ -7150,7 +7150,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove compaction threshold configuration for specified topic.
-      operationId: PersistentTopics_removeCompactionThreshold
+      operationId: NonPersistentTopics_removeCompactionThreshold
       parameters:
       - name: tenant
         in: path
@@ -7201,7 +7201,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Create missed partitions of an existing partitioned topic.
-      operationId: PersistentTopics_createMissedPartitions
+      operationId: NonPersistentTopics_createMissedPartitions
       parameters:
       - name: tenant
         in: path
@@ -7251,7 +7251,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get deduplication configuration of a topic.
-      operationId: PersistentTopics_getDeduplication
+      operationId: NonPersistentTopics_getDeduplication
       parameters:
       - name: tenant
         in: path
@@ -7306,7 +7306,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set deduplication enabled on a topic.
-      operationId: PersistentTopics_setDeduplication
+      operationId: NonPersistentTopics_setDeduplication
       parameters:
       - name: tenant
         in: path
@@ -7361,7 +7361,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove deduplication configuration for specified topic.
-      operationId: PersistentTopics_removeDeduplication
+      operationId: NonPersistentTopics_removeDeduplication
       parameters:
       - name: tenant
         in: path
@@ -7412,7 +7412,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get deduplicationSnapshotInterval config on a topic.
-      operationId: PersistentTopics_getDeduplicationSnapshotInterval
+      operationId: NonPersistentTopics_getDeduplicationSnapshotInterval
       parameters:
       - name: tenant
         in: path
@@ -7462,7 +7462,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set deduplicationSnapshotInterval config on a topic.
-      operationId: PersistentTopics_setDeduplicationSnapshotInterval
+      operationId: NonPersistentTopics_setDeduplicationSnapshotInterval
       parameters:
       - name: tenant
         in: path
@@ -7514,7 +7514,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Delete deduplicationSnapshotInterval config on a topic.
-      operationId: PersistentTopics_deleteDeduplicationSnapshotInterval
+      operationId: NonPersistentTopics_deleteDeduplicationSnapshotInterval
       parameters:
       - name: tenant
         in: path
@@ -7558,7 +7558,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get delayed delivery messages config on a topic.
-      operationId: PersistentTopics_getDelayedDeliveryPolicies
+      operationId: NonPersistentTopics_getDelayedDeliveryPolicies
       parameters:
       - name: tenant
         in: path
@@ -7612,7 +7612,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set delayed delivery messages config on a topic.
-      operationId: PersistentTopics_setDelayedDeliveryPolicies
+      operationId: NonPersistentTopics_setDelayedDeliveryPolicies
       parameters:
       - name: tenant
         in: path
@@ -7663,7 +7663,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set delayed delivery messages config on a topic.
-      operationId: PersistentTopics_deleteDelayedDeliveryPolicies
+      operationId: NonPersistentTopics_deleteDelayedDeliveryPolicies
       parameters:
       - name: tenant
         in: path
@@ -7707,7 +7707,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get dispatch rate configuration for specified topic.
-      operationId: PersistentTopics_getDispatchRate
+      operationId: NonPersistentTopics_getDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -7765,7 +7765,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set message dispatch rate configuration for specified topic.
-      operationId: PersistentTopics_setDispatchRate
+      operationId: NonPersistentTopics_setDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -7823,7 +7823,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove message dispatch rate configuration for specified topic.
-      operationId: PersistentTopics_removeDispatchRate
+      operationId: NonPersistentTopics_removeDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -8038,7 +8038,7 @@ paths:
       - non-persistent topic
       summary: Examine a specific message on a topic by position relative to the earliest
         or the latest message.
-      operationId: PersistentTopics_examineMessage
+      operationId: NonPersistentTopics_examineMessage
       parameters:
       - name: tenant
         in: path
@@ -8111,7 +8111,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get inactive topic policies on a topic.
-      operationId: PersistentTopics_getInactiveTopicPolicies
+      operationId: NonPersistentTopics_getInactiveTopicPolicies
       parameters:
       - name: tenant
         in: path
@@ -8165,7 +8165,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set inactive topic policies on a topic.
-      operationId: PersistentTopics_setInactiveTopicPolicies
+      operationId: NonPersistentTopics_setInactiveTopicPolicies
       parameters:
       - name: tenant
         in: path
@@ -8216,7 +8216,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Delete inactive topic policies on a topic.
-      operationId: PersistentTopics_deleteInactiveTopicPolicies
+      operationId: NonPersistentTopics_deleteInactiveTopicPolicies
       parameters:
       - name: tenant
         in: path
@@ -8260,7 +8260,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get the stored topic metadata.
-      operationId: PersistentTopics_getManagedLedgerInfo
+      operationId: NonPersistentTopics_getManagedLedgerInfo
       parameters:
       - name: tenant
         in: path
@@ -8379,7 +8379,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Return the last commit message id of topic
-      operationId: PersistentTopics_getLastMessageId
+      operationId: NonPersistentTopics_getLastMessageId
       parameters:
       - name: tenant
         in: path
@@ -8443,7 +8443,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get message by its messageId.
-      operationId: PersistentTopics_getMessageById
+      operationId: NonPersistentTopics_getMessageById
       parameters:
       - name: tenant
         in: path
@@ -8521,7 +8521,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get maxConsumers config for specified topic.
-      operationId: PersistentTopics_getMaxConsumers
+      operationId: NonPersistentTopics_getMaxConsumers
       parameters:
       - name: tenant
         in: path
@@ -8580,7 +8580,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set maxConsumers config for specified topic.
-      operationId: PersistentTopics_setMaxConsumers
+      operationId: NonPersistentTopics_setMaxConsumers
       parameters:
       - name: tenant
         in: path
@@ -8642,7 +8642,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove maxConsumers config for specified topic.
-      operationId: PersistentTopics_removeMaxConsumers
+      operationId: NonPersistentTopics_removeMaxConsumers
       parameters:
       - name: tenant
         in: path
@@ -8693,7 +8693,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get max consumers per subscription configuration for specified topic.
-      operationId: PersistentTopics_getMaxConsumersPerSubscription
+      operationId: NonPersistentTopics_getMaxConsumersPerSubscription
       parameters:
       - name: tenant
         in: path
@@ -8747,7 +8747,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set max consumers per subscription configuration for specified topic.
-      operationId: PersistentTopics_setMaxConsumersPerSubscription
+      operationId: NonPersistentTopics_setMaxConsumersPerSubscription
       parameters:
       - name: tenant
         in: path
@@ -8806,7 +8806,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove max consumers per subscription configuration for specified topic.
-      operationId: PersistentTopics_removeMaxConsumersPerSubscription
+      operationId: NonPersistentTopics_removeMaxConsumersPerSubscription
       parameters:
       - name: tenant
         in: path
@@ -8857,7 +8857,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get maxMessageSize config for specified topic.
-      operationId: PersistentTopics_getMaxMessageSize
+      operationId: NonPersistentTopics_getMaxMessageSize
       parameters:
       - name: tenant
         in: path
@@ -8911,7 +8911,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set maxMessageSize config for specified topic.
-      operationId: PersistentTopics_setMaxMessageSize
+      operationId: NonPersistentTopics_setMaxMessageSize
       parameters:
       - name: tenant
         in: path
@@ -8973,7 +8973,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove maxMessageSize config for specified topic.
-      operationId: PersistentTopics_removeMaxMessageSize
+      operationId: NonPersistentTopics_removeMaxMessageSize
       parameters:
       - name: tenant
         in: path
@@ -9024,7 +9024,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get maxProducers config for specified topic.
-      operationId: PersistentTopics_getMaxProducers
+      operationId: NonPersistentTopics_getMaxProducers
       parameters:
       - name: tenant
         in: path
@@ -9083,7 +9083,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set maxProducers config for specified topic.
-      operationId: PersistentTopics_setMaxProducers
+      operationId: NonPersistentTopics_setMaxProducers
       parameters:
       - name: tenant
         in: path
@@ -9145,7 +9145,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove maxProducers config for specified topic.
-      operationId: PersistentTopics_removeMaxProducers
+      operationId: NonPersistentTopics_removeMaxProducers
       parameters:
       - name: tenant
         in: path
@@ -9196,7 +9196,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get maxSubscriptionsPerTopic config for specified topic.
-      operationId: PersistentTopics_getMaxSubscriptionsPerTopic
+      operationId: NonPersistentTopics_getMaxSubscriptionsPerTopic
       parameters:
       - name: tenant
         in: path
@@ -9250,7 +9250,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set maxSubscriptionsPerTopic config for specified topic.
-      operationId: PersistentTopics_setMaxSubscriptionsPerTopic
+      operationId: NonPersistentTopics_setMaxSubscriptionsPerTopic
       parameters:
       - name: tenant
         in: path
@@ -9312,7 +9312,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove maxSubscriptionsPerTopic config for specified topic.
-      operationId: PersistentTopics_removeMaxSubscriptionsPerTopic
+      operationId: NonPersistentTopics_removeMaxSubscriptionsPerTopic
       parameters:
       - name: tenant
         in: path
@@ -9363,7 +9363,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get max unacked messages per consumer config on a topic.
-      operationId: PersistentTopics_getMaxUnackedMessagesOnConsumer
+      operationId: NonPersistentTopics_getMaxUnackedMessagesOnConsumer
       parameters:
       - name: tenant
         in: path
@@ -9418,7 +9418,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set max unacked messages per consumer config on a topic.
-      operationId: PersistentTopics_setMaxUnackedMessagesOnConsumer
+      operationId: NonPersistentTopics_setMaxUnackedMessagesOnConsumer
       parameters:
       - name: tenant
         in: path
@@ -9470,7 +9470,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Delete max unacked messages per consumer config on a topic.
-      operationId: PersistentTopics_deleteMaxUnackedMessagesOnConsumer
+      operationId: NonPersistentTopics_deleteMaxUnackedMessagesOnConsumer
       parameters:
       - name: tenant
         in: path
@@ -9514,7 +9514,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get max unacked messages per subscription config on a topic.
-      operationId: PersistentTopics_getMaxUnackedMessagesOnSubscription
+      operationId: NonPersistentTopics_getMaxUnackedMessagesOnSubscription
       parameters:
       - name: tenant
         in: path
@@ -9569,7 +9569,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set max unacked messages per subscription config on a topic.
-      operationId: PersistentTopics_setMaxUnackedMessagesOnSubscription
+      operationId: NonPersistentTopics_setMaxUnackedMessagesOnSubscription
       parameters:
       - name: tenant
         in: path
@@ -9622,7 +9622,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Delete max unacked messages per subscription config on a topic.
-      operationId: PersistentTopics_deleteMaxUnackedMessagesOnSubscription
+      operationId: NonPersistentTopics_deleteMaxUnackedMessagesOnSubscription
       parameters:
       - name: tenant
         in: path
@@ -9666,7 +9666,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get message TTL in seconds for a topic
-      operationId: PersistentTopics_getMessageTTL
+      operationId: NonPersistentTopics_getMessageTTL
       parameters:
       - name: tenant
         in: path
@@ -9722,7 +9722,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set message TTL in seconds for a topic
-      operationId: PersistentTopics_setMessageTTL
+      operationId: NonPersistentTopics_setMessageTTL
       parameters:
       - name: tenant
         in: path
@@ -9779,7 +9779,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove message TTL in seconds for a topic
-      operationId: PersistentTopics_removeMessageTTL
+      operationId: NonPersistentTopics_removeMessageTTL
       parameters:
       - name: tenant
         in: path
@@ -9831,7 +9831,7 @@ paths:
       - non-persistent topic
       summary: Get message ID published at or just after this absolute timestamp (in
         ms).
-      operationId: PersistentTopics_getMessageIdByTimestamp
+      operationId: NonPersistentTopics_getMessageIdByTimestamp
       parameters:
       - name: tenant
         in: path
@@ -9902,7 +9902,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Offload a prefix of a topic to long term storage
-      operationId: PersistentTopics_offloadStatus
+      operationId: NonPersistentTopics_offloadStatus
       parameters:
       - name: tenant
         in: path
@@ -9965,7 +9965,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Offload a prefix of a topic to long term storage
-      operationId: PersistentTopics_triggerOffload
+      operationId: NonPersistentTopics_triggerOffload
       parameters:
       - name: tenant
         in: path
@@ -10032,7 +10032,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get offload policies on a topic.
-      operationId: PersistentTopics_getOffloadPolicies
+      operationId: NonPersistentTopics_getOffloadPolicies
       parameters:
       - name: tenant
         in: path
@@ -10086,7 +10086,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set offload policies on a topic.
-      operationId: PersistentTopics_setOffloadPolicies
+      operationId: NonPersistentTopics_setOffloadPolicies
       parameters:
       - name: tenant
         in: path
@@ -10137,7 +10137,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Delete offload policies on a topic.
-      operationId: PersistentTopics_removeOffloadPolicies
+      operationId: NonPersistentTopics_removeOffloadPolicies
       parameters:
       - name: tenant
         in: path
@@ -10181,7 +10181,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get the stats-internal for the partitioned topic.
-      operationId: PersistentTopics_getPartitionedStatsInternal
+      operationId: NonPersistentTopics_getPartitionedStatsInternal
       parameters:
       - name: tenant
         in: path
@@ -10466,7 +10466,7 @@ paths:
       - non-persistent topic
       summary: Increment partitions of an existing partitioned topic.
       description: It increments partitions of existing partitioned-topic
-      operationId: PersistentTopics_updatePartitionedTopic
+      operationId: NonPersistentTopics_updatePartitionedTopic
       parameters:
       - name: tenant
         in: path
@@ -10545,7 +10545,7 @@ paths:
       - non-persistent topic
       summary: Delete a partitioned topic.
       description: It will also delete all the partitions of the topic if it exists.
-      operationId: PersistentTopics_deletePartitionedTopic
+      operationId: NonPersistentTopics_deletePartitionedTopic
       parameters:
       - name: tenant
         in: path
@@ -10613,7 +10613,7 @@ paths:
         \ with any eventual specific permission set on the topic.Returns a nested\
         \ map structure which Swagger does not fully support for display. Structure:\
         \ Map<String, Set<AuthAction>>. Please refer to this structure for details."
-      operationId: PersistentTopics_getPermissionsOnTopic
+      operationId: NonPersistentTopics_getPermissionsOnTopic
       parameters:
       - name: tenant
         in: path
@@ -10669,7 +10669,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Grant a new permission to a role on a single topic.
-      operationId: PersistentTopics_grantPermissionsOnTopic
+      operationId: NonPersistentTopics_grantPermissionsOnTopic
       parameters:
       - name: tenant
         in: path
@@ -10744,7 +10744,7 @@ paths:
       description: "Revoke permissions to a role on a single topic. If the permission\
         \ was not set at the topiclevel, but rather at the namespace level, this operation\
         \ will return an error (HTTP status code 412)."
-      operationId: PersistentTopics_revokePermissionsOnTopic
+      operationId: NonPersistentTopics_revokePermissionsOnTopic
       parameters:
       - name: tenant
         in: path
@@ -10797,7 +10797,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get configuration of persistence policies for specified topic.
-      operationId: PersistentTopics_getPersistence
+      operationId: NonPersistentTopics_getPersistence
       parameters:
       - name: tenant
         in: path
@@ -10855,7 +10855,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set configuration of persistence policies for specified topic.
-      operationId: PersistentTopics_setPersistence
+      operationId: NonPersistentTopics_setPersistence
       parameters:
       - name: tenant
         in: path
@@ -10916,7 +10916,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove configuration of persistence policies for specified topic.
-      operationId: PersistentTopics_removePersistence
+      operationId: NonPersistentTopics_removePersistence
       parameters:
       - name: tenant
         in: path
@@ -10967,7 +10967,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get topic properties.
-      operationId: PersistentTopics_getProperties
+      operationId: NonPersistentTopics_getProperties
       parameters:
       - name: tenant
         in: path
@@ -11028,7 +11028,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Update the properties on the given topic.
-      operationId: PersistentTopics_updateProperties
+      operationId: NonPersistentTopics_updateProperties
       parameters:
       - name: tenant
         in: path
@@ -11095,7 +11095,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove the key in properties on the given topic.
-      operationId: PersistentTopics_removeProperties
+      operationId: NonPersistentTopics_removeProperties
       parameters:
       - name: tenant
         in: path
@@ -11154,7 +11154,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get publish rate configuration for specified topic.
-      operationId: PersistentTopics_getPublishRate
+      operationId: NonPersistentTopics_getPublishRate
       parameters:
       - name: tenant
         in: path
@@ -11207,7 +11207,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set message publish rate configuration for specified topic.
-      operationId: PersistentTopics_setPublishRate
+      operationId: NonPersistentTopics_setPublishRate
       parameters:
       - name: tenant
         in: path
@@ -11265,7 +11265,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove message publish rate configuration for specified topic.
-      operationId: PersistentTopics_removePublishRate
+      operationId: NonPersistentTopics_removePublishRate
       parameters:
       - name: tenant
         in: path
@@ -11316,7 +11316,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get the replication clusters for a topic
-      operationId: PersistentTopics_getReplicationClusters
+      operationId: NonPersistentTopics_getReplicationClusters
       parameters:
       - name: tenant
         in: path
@@ -11368,7 +11368,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set the replication clusters for a topic.
-      operationId: PersistentTopics_setReplicationClusters
+      operationId: NonPersistentTopics_setReplicationClusters
       parameters:
       - name: tenant
         in: path
@@ -11426,7 +11426,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove the replication clusters from a topic.
-      operationId: PersistentTopics_removeReplicationClusters
+      operationId: NonPersistentTopics_removeReplicationClusters
       parameters:
       - name: tenant
         in: path
@@ -11479,7 +11479,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get replicatorDispatchRate config for specified topic.
-      operationId: PersistentTopics_getReplicatorDispatchRate
+      operationId: NonPersistentTopics_getReplicatorDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -11537,7 +11537,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set replicatorDispatchRate config for specified topic.
-      operationId: PersistentTopics_setReplicatorDispatchRate
+      operationId: NonPersistentTopics_setReplicatorDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -11598,7 +11598,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove replicatorDispatchRate config for specified topic.
-      operationId: PersistentTopics_removeReplicatorDispatchRate
+      operationId: NonPersistentTopics_removeReplicatorDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -11649,7 +11649,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get retention configuration for specified topic.
-      operationId: PersistentTopics_getRetention
+      operationId: NonPersistentTopics_getRetention
       parameters:
       - name: tenant
         in: path
@@ -11707,7 +11707,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set retention configuration for specified topic.
-      operationId: PersistentTopics_setRetention
+      operationId: NonPersistentTopics_setRetention
       parameters:
       - name: tenant
         in: path
@@ -11768,7 +11768,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove retention configuration for specified topic.
-      operationId: PersistentTopics_removeRetention
+      operationId: NonPersistentTopics_removeRetention
       parameters:
       - name: tenant
         in: path
@@ -11822,7 +11822,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get schema compatibility strategy on a topic
-      operationId: PersistentTopics_getSchemaCompatibilityStrategy
+      operationId: NonPersistentTopics_getSchemaCompatibilityStrategy
       parameters:
       - name: tenant
         in: path
@@ -11887,7 +11887,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set schema compatibility strategy on a topic
-      operationId: PersistentTopics_setSchemaCompatibilityStrategy
+      operationId: NonPersistentTopics_setSchemaCompatibilityStrategy
       parameters:
       - name: tenant
         in: path
@@ -11942,7 +11942,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove schema compatibility strategy on a topic
-      operationId: PersistentTopics_removeSchemaCompatibilityStrategy
+      operationId: NonPersistentTopics_removeSchemaCompatibilityStrategy
       parameters:
       - name: tenant
         in: path
@@ -11998,7 +11998,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get schema validation enforced flag for topic.
-      operationId: PersistentTopics_getSchemaValidationEnforced
+      operationId: NonPersistentTopics_getSchemaValidationEnforced
       parameters:
       - name: tenant
         in: path
@@ -12047,7 +12047,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set schema validation enforced flag on topic.
-      operationId: PersistentTopics_setSchemaValidationEnforced
+      operationId: NonPersistentTopics_setSchemaValidationEnforced
       parameters:
       - name: tenant
         in: path
@@ -12099,7 +12099,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get the shadow topic list for a topic
-      operationId: PersistentTopics_getShadowTopics
+      operationId: NonPersistentTopics_getShadowTopics
       parameters:
       - name: tenant
         in: path
@@ -12146,7 +12146,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set shadow topic list for a topic
-      operationId: PersistentTopics_setShadowTopics
+      operationId: NonPersistentTopics_setShadowTopics
       parameters:
       - name: tenant
         in: path
@@ -12201,7 +12201,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Delete shadow topics for a topic
-      operationId: PersistentTopics_deleteShadowTopics
+      operationId: NonPersistentTopics_deleteShadowTopics
       parameters:
       - name: tenant
         in: path
@@ -12247,7 +12247,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get the stats for the topic.
-      operationId: PersistentTopics_getStats
+      operationId: NonPersistentTopics_getStats
       parameters:
       - name: tenant
         in: path
@@ -12326,7 +12326,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get subscribe rate configuration for specified topic.
-      operationId: PersistentTopics_getSubscribeRate
+      operationId: NonPersistentTopics_getSubscribeRate
       parameters:
       - name: tenant
         in: path
@@ -12384,7 +12384,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set subscribe rate configuration for specified topic.
-      operationId: PersistentTopics_setSubscribeRate
+      operationId: NonPersistentTopics_setSubscribeRate
       parameters:
       - name: tenant
         in: path
@@ -12442,7 +12442,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove subscribe rate configuration for specified topic.
-      operationId: PersistentTopics_removeSubscribeRate
+      operationId: NonPersistentTopics_removeSubscribeRate
       parameters:
       - name: tenant
         in: path
@@ -12504,7 +12504,7 @@ paths:
       description: The subscription cannot be deleted if delete is not forcefully
         and there are any active consumers attached to it. Force delete ignores connected
         consumers and deletes subscription by explicitly closing them.
-      operationId: PersistentTopics_deleteSubscription
+      operationId: NonPersistentTopics_deleteSubscription
       parameters:
       - name: tenant
         in: path
@@ -12573,7 +12573,7 @@ paths:
       tags:
       - non-persistent topic
       summary: "Analyse a subscription, by scanning all the unprocessed messages"
-      operationId: PersistentTopics_analyzeSubscriptionBacklog
+      operationId: NonPersistentTopics_analyzeSubscriptionBacklog
       parameters:
       - name: tenant
         in: path
@@ -12645,7 +12645,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Expiry messages on a topic subscription.
-      operationId: PersistentTopics_expireTopicMessages
+      operationId: NonPersistentTopics_expireTopicMessages
       parameters:
       - name: tenant
         in: path
@@ -12717,7 +12717,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Expiry messages on a topic subscription.
-      operationId: PersistentTopics_expireTopicMessages
+      operationId: NonPersistentTopics_expireTopicMessages
       parameters:
       - name: tenant
         in: path
@@ -12789,7 +12789,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Peek nth message on a topic subscription.
-      operationId: PersistentTopics_peekNthMessage
+      operationId: NonPersistentTopics_peekNthMessage
       parameters:
       - name: tenant
         in: path
@@ -12867,7 +12867,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Return all the properties on the given subscription
-      operationId: PersistentTopics_getSubscriptionProperties
+      operationId: NonPersistentTopics_getSubscriptionProperties
       parameters:
       - name: tenant
         in: path
@@ -12935,7 +12935,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Replace all the properties on the given subscription
-      operationId: PersistentTopics_updateSubscriptionProperties
+      operationId: NonPersistentTopics_updateSubscriptionProperties
       parameters:
       - name: tenant
         in: path
@@ -13009,7 +13009,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get replicated subscription status on a topic.
-      operationId: PersistentTopics_getReplicatedSubscriptionStatus
+      operationId: NonPersistentTopics_getReplicatedSubscriptionStatus
       parameters:
       - name: tenant
         in: path
@@ -13070,7 +13070,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Enable or disable a replicated subscription on a topic.
-      operationId: PersistentTopics_setReplicatedSubscriptionStatus
+      operationId: NonPersistentTopics_setReplicatedSubscriptionStatus
       parameters:
       - name: tenant
         in: path
@@ -13147,7 +13147,7 @@ paths:
       summary: Reset subscription to message position closest to given position.
       description: It fence cursor and disconnects all active consumers before resetting
         cursor.
-      operationId: PersistentTopics_resetCursorOnPosition
+      operationId: NonPersistentTopics_resetCursorOnPosition
       parameters:
       - name: tenant
         in: path
@@ -13225,7 +13225,7 @@ paths:
         (in ms).
       description: It fence cursor and disconnects all active consumers before resetting
         cursor.
-      operationId: PersistentTopics_resetCursor
+      operationId: NonPersistentTopics_resetCursor
       parameters:
       - name: tenant
         in: path
@@ -13300,7 +13300,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Skipping messages on a topic subscription.
-      operationId: PersistentTopics_skipMessages
+      operationId: NonPersistentTopics_skipMessages
       parameters:
       - name: tenant
         in: path
@@ -13372,7 +13372,7 @@ paths:
       - non-persistent topic
       summary: Skip all messages on a topic subscription.
       description: Completely clears the backlog on the subscription.
-      operationId: PersistentTopics_skipAllMessages
+      operationId: NonPersistentTopics_skipAllMessages
       parameters:
       - name: tenant
         in: path
@@ -13440,7 +13440,7 @@ paths:
       - non-persistent topic
       summary: Create a subscription on the topic.
       description: Creates a subscription on the topic at the specified message id
-      operationId: PersistentTopics_createSubscription
+      operationId: NonPersistentTopics_createSubscription
       parameters:
       - name: tenant
         in: path
@@ -13522,7 +13522,7 @@ paths:
       - non-persistent topic
       summary: Get subscription message dispatch rate configuration for specified
         topic.
-      operationId: PersistentTopics_getSubscriptionDispatchRate
+      operationId: NonPersistentTopics_getSubscriptionDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -13581,7 +13581,7 @@ paths:
       - non-persistent topic
       summary: Set subscription message dispatch rate configuration for specified
         topic.
-      operationId: PersistentTopics_setSubscriptionDispatchRate
+      operationId: NonPersistentTopics_setSubscriptionDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -13640,7 +13640,7 @@ paths:
       - non-persistent topic
       summary: Remove subscription message dispatch rate configuration for specified
         topic.
-      operationId: PersistentTopics_removeSubscriptionDispatchRate
+      operationId: NonPersistentTopics_removeSubscriptionDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -13691,7 +13691,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get is enable sub type fors specified topic.
-      operationId: PersistentTopics_getSubscriptionTypesEnabled
+      operationId: NonPersistentTopics_getSubscriptionTypesEnabled
       parameters:
       - name: tenant
         in: path
@@ -13751,7 +13751,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set is enable sub types for specified topic
-      operationId: PersistentTopics_setSubscriptionTypesEnabled
+      operationId: NonPersistentTopics_setSubscriptionTypesEnabled
       parameters:
       - name: tenant
         in: path
@@ -13816,7 +13816,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove subscription types enabled for specified topic.
-      operationId: PersistentTopics_removeSubscriptionTypesEnabled
+      operationId: NonPersistentTopics_removeSubscriptionTypesEnabled
       parameters:
       - name: tenant
         in: path
@@ -13867,7 +13867,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get the list of persistent subscriptions for a given topic.
-      operationId: PersistentTopics_getSubscriptions
+      operationId: NonPersistentTopics_getSubscriptions
       parameters:
       - name: tenant
         in: path
@@ -13931,7 +13931,7 @@ paths:
       summary: Terminate a topic. A topic that is terminated will not accept any more
         messages to be published and will let consumer to drain existing messages
         in backlog
-      operationId: PersistentTopics_terminate
+      operationId: NonPersistentTopics_terminate
       parameters:
       - name: tenant
         in: path
@@ -14001,7 +14001,7 @@ paths:
       summary: Terminate all partitioned topic. A topic that is terminated will not
         accept any more messages to be published and will let consumer to drain existing
         messages in backlog
-      operationId: PersistentTopics_terminatePartitionedTopic
+      operationId: NonPersistentTopics_terminatePartitionedTopic
       parameters:
       - name: tenant
         in: path
@@ -14059,7 +14059,7 @@ paths:
       tags:
       - non-persistent topic
       summary: ' Trim a topic'
-      operationId: PersistentTopics_trimTopic
+      operationId: NonPersistentTopics_trimTopic
       parameters:
       - name: tenant
         in: path
@@ -14217,7 +14217,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Get message dispatch rate configuration for specified subscription.
-      operationId: PersistentTopics_getSubscriptionLevelDispatchRate
+      operationId: NonPersistentTopics_getSubscriptionLevelDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -14280,7 +14280,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Set message dispatch rate configuration for specified subscription.
-      operationId: PersistentTopics_setSubscriptionLevelDispatchRate
+      operationId: NonPersistentTopics_setSubscriptionLevelDispatchRate
       parameters:
       - name: tenant
         in: path
@@ -14343,7 +14343,7 @@ paths:
       tags:
       - non-persistent topic
       summary: Remove message dispatch rate configuration for specified subscription.
-      operationId: PersistentTopics_removeSubscriptionLevelDispatchRate
+      operationId: NonPersistentTopics_removeSubscriptionLevelDispatchRate
       parameters:
       - name: tenant
         in: path
