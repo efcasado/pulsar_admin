@@ -24,14 +24,14 @@ You can override the URL of your server (e.g. if you have a separate development
 configuration files).
 
 ```elixir
-config :pulsar_admin, base_url: "/admin/v2"
+config :pulsar_admin, base_url: "http://localhost:8080/admin/v2"
 ```
 
 Multiple clients for the same API with different URLs can be created passing different `base_url`s when calling
 `PulsarAdmin.Connection.new/1`:
 
 ```elixir
-client = PulsarAdmin.Connection.new(base_url: "/admin/v2")
+client = PulsarAdmin.Connection.new(base_url: "http://localhost:8080/admin/v2")
 ```
 
 [exdoc]: https://github.com/elixir-lang/ex_doc
