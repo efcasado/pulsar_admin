@@ -22,8 +22,8 @@ defmodule PulsarAdmin.Api.ResourceQuotas do
   - `{:ok, [%String{}, ...]}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec resource_quotas_get_default_resource_quota(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def resource_quotas_get_default_resource_quota(connection, _opts \\ []) do
+  @spec resource_quotas_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def resource_quotas_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -35,74 +35,6 @@ defmodule PulsarAdmin.Api.ResourceQuotas do
     |> evaluate_response([
       {200, []},
       {403, false}
-    ])
-  end
-
-  @doc """
-  Get resource quota of a namespace bundle.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Tenant name
-  - `namespace` (String.t): Namespace name within the specified tenant
-  - `bundle` (String.t): Namespace bundle range
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.ResourceQuota.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec resource_quotas_get_namespace_bundle_resource_quota(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.ResourceQuota.t} | {:error, Tesla.Env.t}
-  def resource_quotas_get_namespace_bundle_resource_quota(connection, tenant, namespace, bundle, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/resource-quotas/#{tenant}/#{namespace}/#{bundle}")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.ResourceQuota},
-      {307, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Remove resource quota for a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): Tenant name
-  - `namespace` (String.t): Namespace name within the specified tenant
-  - `bundle` (String.t): Namespace bundle range
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec resource_quotas_remove_namespace_bundle_resource_quota(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def resource_quotas_remove_namespace_bundle_resource_quota(connection, tenant, namespace, bundle, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/resource-quotas/#{tenant}/#{namespace}/#{bundle}")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {403, false},
-      {409, false}
     ])
   end
 
@@ -120,8 +52,8 @@ defmodule PulsarAdmin.Api.ResourceQuotas do
   - `{:ok, [%String{}, ...]}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec resource_quotas_set_default_resource_quota(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def resource_quotas_set_default_resource_quota(connection, opts \\ []) do
+  @spec resource_quotas_post(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def resource_quotas_post(connection, opts \\ []) do
     optional_params = %{
       :body => :body
     }
@@ -143,6 +75,74 @@ defmodule PulsarAdmin.Api.ResourceQuotas do
   end
 
   @doc """
+  Remove resource quota for a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Tenant name
+  - `namespace` (String.t): Namespace name within the specified tenant
+  - `bundle` (String.t): Namespace bundle range
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec resource_quotas_tenant_namespace_bundle_delete(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def resource_quotas_tenant_namespace_bundle_delete(connection, tenant, namespace, bundle, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/resource-quotas/#{tenant}/#{namespace}/#{bundle}")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {403, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get resource quota of a namespace bundle.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): Tenant name
+  - `namespace` (String.t): Namespace name within the specified tenant
+  - `bundle` (String.t): Namespace bundle range
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.ResourceQuota.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec resource_quotas_tenant_namespace_bundle_get(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.ResourceQuota.t} | {:error, Tesla.Env.t}
+  def resource_quotas_tenant_namespace_bundle_get(connection, tenant, namespace, bundle, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/resource-quotas/#{tenant}/#{namespace}/#{bundle}")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.ResourceQuota},
+      {307, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
   Set resource quota on a namespace.
 
   ### Parameters
@@ -159,8 +159,8 @@ defmodule PulsarAdmin.Api.ResourceQuotas do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec resource_quotas_set_namespace_bundle_resource_quota(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def resource_quotas_set_namespace_bundle_resource_quota(connection, tenant, namespace, bundle, opts \\ []) do
+  @spec resource_quotas_tenant_namespace_bundle_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def resource_quotas_tenant_namespace_bundle_post(connection, tenant, namespace, bundle, opts \\ []) do
     optional_params = %{
       :body => :body
     }

@@ -10,6 +10,52 @@ defmodule PulsarAdmin.Api.Schemas do
   import PulsarAdmin.RequestBuilder
 
   @doc """
+  test the schema compatibility
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): 
+    - `:body` (PostSchemaPayload): A JSON value presenting a schema payload. An example of the expected schema can be found down here.
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.IsCompatibilityResponse.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec schemas_tenant_namespace_topic_compatibility_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.IsCompatibilityResponse.t} | {:error, Tesla.Env.t}
+  def schemas_tenant_namespace_topic_compatibility_post(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/schemas/#{tenant}/#{namespace}/#{topic}/compatibility")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.IsCompatibilityResponse},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
   Delete all versions schema of a topic
 
   ### Parameters
@@ -27,8 +73,8 @@ defmodule PulsarAdmin.Api.Schemas do
   - `{:ok, PulsarAdmin.Model.DeleteSchemaResponse.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec schemas_resource_delete_schema(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DeleteSchemaResponse.t} | {:error, Tesla.Env.t}
-  def schemas_resource_delete_schema(connection, tenant, namespace, topic, opts \\ []) do
+  @spec schemas_tenant_namespace_topic_schema_delete(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DeleteSchemaResponse.t} | {:error, Tesla.Env.t}
+  def schemas_tenant_namespace_topic_schema_delete(connection, tenant, namespace, topic, opts \\ []) do
     optional_params = %{
       :authoritative => :query,
       :force => :query
@@ -55,49 +101,6 @@ defmodule PulsarAdmin.Api.Schemas do
   end
 
   @doc """
-  Get the all schemas of a topic
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.GetAllVersionsSchemaResponse.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec schemas_resource_get_all_schemas(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.GetAllVersionsSchemaResponse.t} | {:error, Tesla.Env.t}
-  def schemas_resource_get_all_schemas(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/schemas/#{tenant}/#{namespace}/#{topic}/schemas")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.GetAllVersionsSchemaResponse},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
   Get the schema of a topic
 
   ### Parameters
@@ -114,8 +117,8 @@ defmodule PulsarAdmin.Api.Schemas do
   - `{:ok, PulsarAdmin.Model.GetSchemaResponse.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec schemas_resource_get_schema(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.GetSchemaResponse.t} | {:error, Tesla.Env.t}
-  def schemas_resource_get_schema(connection, tenant, namespace, topic, opts \\ []) do
+  @spec schemas_tenant_namespace_topic_schema_get(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.GetSchemaResponse.t} | {:error, Tesla.Env.t}
+  def schemas_tenant_namespace_topic_schema_get(connection, tenant, namespace, topic, opts \\ []) do
     optional_params = %{
       :authoritative => :query
     }
@@ -141,97 +144,6 @@ defmodule PulsarAdmin.Api.Schemas do
   end
 
   @doc """
-  Get the schema of a topic at a given version
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `version` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.GetSchemaResponse.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec schemas_resource_get_schema_0(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.GetSchemaResponse.t} | {:error, Tesla.Env.t}
-  def schemas_resource_get_schema_0(connection, tenant, namespace, topic, version, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/schemas/#{tenant}/#{namespace}/#{topic}/schema/#{version}")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.GetSchemaResponse},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  get the version of the schema
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `topic` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): 
-    - `:body` (PostSchemaPayload): A JSON value presenting a schema payload. An example of the expected schema can be found down here.
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.LongSchemaVersion.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec schemas_resource_get_version_by_schema(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LongSchemaVersion.t} | {:error, Tesla.Env.t}
-  def schemas_resource_get_version_by_schema(connection, tenant, namespace, topic, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/schemas/#{tenant}/#{namespace}/#{topic}/version")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.LongSchemaVersion},
-      {307, false},
-      {401, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {422, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
   Update the schema of a topic
 
   ### Parameters
@@ -249,8 +161,8 @@ defmodule PulsarAdmin.Api.Schemas do
   - `{:ok, PulsarAdmin.Model.PostSchemaResponse.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec schemas_resource_post_schema(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PostSchemaResponse.t} | {:error, Tesla.Env.t}
-  def schemas_resource_post_schema(connection, tenant, namespace, topic, opts \\ []) do
+  @spec schemas_tenant_namespace_topic_schema_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PostSchemaResponse.t} | {:error, Tesla.Env.t}
+  def schemas_tenant_namespace_topic_schema_post(connection, tenant, namespace, topic, opts \\ []) do
     optional_params = %{
       :authoritative => :query,
       :body => :body
@@ -280,7 +192,94 @@ defmodule PulsarAdmin.Api.Schemas do
   end
 
   @doc """
-  test the schema compatibility
+  Get the schema of a topic at a given version
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `version` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.GetSchemaResponse.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec schemas_tenant_namespace_topic_schema_version_get(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.GetSchemaResponse.t} | {:error, Tesla.Env.t}
+  def schemas_tenant_namespace_topic_schema_version_get(connection, tenant, namespace, topic, version, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/schemas/#{tenant}/#{namespace}/#{topic}/schema/#{version}")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.GetSchemaResponse},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get the all schemas of a topic
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `topic` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.GetAllVersionsSchemaResponse.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec schemas_tenant_namespace_topic_schemas_get(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.GetAllVersionsSchemaResponse.t} | {:error, Tesla.Env.t}
+  def schemas_tenant_namespace_topic_schemas_get(connection, tenant, namespace, topic, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/schemas/#{tenant}/#{namespace}/#{topic}/schemas")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.GetAllVersionsSchemaResponse},
+      {307, false},
+      {401, false},
+      {403, false},
+      {404, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  get the version of the schema
 
   ### Parameters
 
@@ -294,11 +293,11 @@ defmodule PulsarAdmin.Api.Schemas do
 
   ### Returns
 
-  - `{:ok, PulsarAdmin.Model.IsCompatibilityResponse.t}` on success
+  - `{:ok, PulsarAdmin.Model.LongSchemaVersion.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec schemas_resource_test_compatibility(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.IsCompatibilityResponse.t} | {:error, Tesla.Env.t}
-  def schemas_resource_test_compatibility(connection, tenant, namespace, topic, opts \\ []) do
+  @spec schemas_tenant_namespace_topic_version_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LongSchemaVersion.t} | {:error, Tesla.Env.t}
+  def schemas_tenant_namespace_topic_version_post(connection, tenant, namespace, topic, opts \\ []) do
     optional_params = %{
       :authoritative => :query,
       :body => :body
@@ -307,7 +306,7 @@ defmodule PulsarAdmin.Api.Schemas do
     request =
       %{}
       |> method(:post)
-      |> url("/schemas/#{tenant}/#{namespace}/#{topic}/compatibility")
+      |> url("/schemas/#{tenant}/#{namespace}/#{topic}/version")
       |> add_optional_params(optional_params, opts)
       |> ensure_body()
       |> Enum.into([])
@@ -315,12 +314,13 @@ defmodule PulsarAdmin.Api.Schemas do
     connection
     |> Connection.request(request)
     |> evaluate_response([
-      {200, PulsarAdmin.Model.IsCompatibilityResponse},
+      {200, PulsarAdmin.Model.LongSchemaVersion},
       {307, false},
       {401, false},
       {403, false},
       {404, false},
       {412, false},
+      {422, false},
       {500, false}
     ])
   end

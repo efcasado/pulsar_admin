@@ -23,8 +23,8 @@ defmodule PulsarAdmin.Api.BrokerStats do
   - `{:ok, PulsarAdmin.Model.AllocatorStats.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec broker_stats_base_get_allocator_stats(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.AllocatorStats.t} | {:error, Tesla.Env.t}
-  def broker_stats_base_get_allocator_stats(connection, allocator, _opts \\ []) do
+  @spec broker_stats_allocator_stats_allocator_get(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.AllocatorStats.t} | {:error, Tesla.Env.t}
+  def broker_stats_allocator_stats_allocator_get(connection, allocator, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -35,95 +35,6 @@ defmodule PulsarAdmin.Api.BrokerStats do
     |> Connection.request(request)
     |> evaluate_response([
       {200, PulsarAdmin.Model.AllocatorStats},
-      {403, false}
-    ])
-  end
-
-  @doc """
-  Get Load for this broker
-  consists of topics stats & systemResourceUsage
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.LoadReport.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec broker_stats_base_get_load_report(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LoadReport.t} | {:error, Tesla.Env.t}
-  def broker_stats_base_get_load_report(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/broker-stats/load-report")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.LoadReport},
-      {403, false}
-    ])
-  end
-
-  @doc """
-  Get all the mbean details of this broker JVM
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, [%Metrics{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec broker_stats_base_get_m_beans(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.Metrics.t]} | {:error, Tesla.Env.t}
-  def broker_stats_base_get_m_beans(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/broker-stats/mbeans")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.Metrics},
-      {403, false}
-    ])
-  end
-
-  @doc """
-  Gets the metrics for Monitoring
-  Requested should be executed by Monitoring agent on each broker to fetch the metrics
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, [%Metrics{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec broker_stats_base_get_metrics(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.Metrics.t]} | {:error, Tesla.Env.t}
-  def broker_stats_base_get_metrics(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/broker-stats/metrics")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.Metrics},
       {403, false}
     ])
   end
@@ -142,8 +53,8 @@ defmodule PulsarAdmin.Api.BrokerStats do
   - `{:ok, %{}}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec broker_stats_base_get_pending_bookie_ops_stats(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def broker_stats_base_get_pending_bookie_ops_stats(connection, _opts \\ []) do
+  @spec broker_stats_bookieops_get(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def broker_stats_bookieops_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -174,8 +85,8 @@ defmodule PulsarAdmin.Api.BrokerStats do
   - `{:ok, %{}}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec broker_stats_get_broker_resource_availability(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def broker_stats_get_broker_resource_availability(connection, tenant, namespace, _opts \\ []) do
+  @spec broker_stats_broker_resource_availability_tenant_namespace_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def broker_stats_broker_resource_availability_tenant_namespace_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -192,6 +103,95 @@ defmodule PulsarAdmin.Api.BrokerStats do
   end
 
   @doc """
+  Get Load for this broker
+  consists of topics stats & systemResourceUsage
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.LoadReport.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec broker_stats_load_report_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LoadReport.t} | {:error, Tesla.Env.t}
+  def broker_stats_load_report_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/broker-stats/load-report")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.LoadReport},
+      {403, false}
+    ])
+  end
+
+  @doc """
+  Get all the mbean details of this broker JVM
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, [%Metrics{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec broker_stats_mbeans_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.Metrics.t]} | {:error, Tesla.Env.t}
+  def broker_stats_mbeans_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/broker-stats/mbeans")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.Metrics},
+      {403, false}
+    ])
+  end
+
+  @doc """
+  Gets the metrics for Monitoring
+  Requested should be executed by Monitoring agent on each broker to fetch the metrics
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, [%Metrics{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec broker_stats_metrics_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.Metrics.t]} | {:error, Tesla.Env.t}
+  def broker_stats_metrics_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/broker-stats/metrics")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.Metrics},
+      {403, false}
+    ])
+  end
+
+  @doc """
   Get all the topic stats by namespace
 
   ### Parameters
@@ -204,8 +204,8 @@ defmodule PulsarAdmin.Api.BrokerStats do
   - `{:ok, map()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec broker_stats_get_topics2(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def broker_stats_get_topics2(connection, _opts \\ []) do
+  @spec broker_stats_topics_get(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def broker_stats_topics_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)

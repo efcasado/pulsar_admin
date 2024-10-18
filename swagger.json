@@ -1,4 +1,5 @@
 {
+    "host": "localhost:8080",
     "basePath": "/admin/v2",
     "definitions": {
         "AllocatorStats": {
@@ -4837,7 +4838,6 @@
         "/bookies/all": {
             "get": {
                 "description": "",
-                "operationId": "Bookies_getAllBookies",
                 "produces": [
                     "application/json"
                 ],
@@ -4861,7 +4861,6 @@
         "/bookies/racks-info": {
             "get": {
                 "description": "",
-                "operationId": "Bookies_getBookiesRackInfo",
                 "produces": [
                     "application/json"
                 ],
@@ -4891,7 +4890,6 @@
         "/bookies/racks-info/{bookie}": {
             "delete": {
                 "description": "",
-                "operationId": "Bookies_deleteBookieRackInfo",
                 "parameters": [
                     {
                         "in": "path",
@@ -4918,7 +4916,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "Bookies_getBookieRackInfo",
                 "parameters": [
                     {
                         "in": "path",
@@ -4948,7 +4945,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "Bookies_updateBookieRackInfo",
                 "parameters": [
                     {
                         "description": "The bookie address",
@@ -4994,7 +4990,6 @@
         "/broker-stats/allocator-stats/{allocator}": {
             "get": {
                 "description": "",
-                "operationId": "BrokerStatsBase_getAllocatorStats",
                 "parameters": [
                     {
                         "in": "path",
@@ -5026,7 +5021,6 @@
         "/broker-stats/bookieops": {
             "get": {
                 "description": "Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Map<String, PendingBookieOpsStats>>. Please refer to this structure for details.",
-                "operationId": "BrokerStatsBase_getPendingBookieOpsStats",
                 "produces": [
                     "application/json"
                 ],
@@ -5053,7 +5047,6 @@
         "/broker-stats/broker-resource-availability/{tenant}/{namespace}": {
             "get": {
                 "description": "This API gives the current broker availability in percent, each resource percentage usage is calculated and thensum of all of the resource usage percent is called broker-resource-availability<br/><br/>THIS API IS ONLY FOR USE BY TESTING FOR CONFIRMING NAMESPACE ALLOCATION ALGORITHM",
-                "operationId": "BrokerStats_getBrokerResourceAvailability",
                 "parameters": [
                     {
                         "in": "path",
@@ -5097,7 +5090,6 @@
         "/broker-stats/load-report": {
             "get": {
                 "description": "consists of topics stats & systemResourceUsage",
-                "operationId": "BrokerStatsBase_getLoadReport",
                 "produces": [
                     "application/json"
                 ],
@@ -5121,7 +5113,6 @@
         "/broker-stats/mbeans": {
             "get": {
                 "description": "",
-                "operationId": "BrokerStatsBase_getMBeans",
                 "produces": [
                     "application/json"
                 ],
@@ -5148,7 +5139,6 @@
         "/broker-stats/metrics": {
             "get": {
                 "description": "Requested should be executed by Monitoring agent on each broker to fetch the metrics",
-                "operationId": "BrokerStatsBase_getMetrics",
                 "produces": [
                     "application/json"
                 ],
@@ -5175,7 +5165,6 @@
         "/broker-stats/topics": {
             "get": {
                 "description": "",
-                "operationId": "BrokerStats_getTopics2",
                 "produces": [
                     "application/json"
                 ],
@@ -5199,7 +5188,6 @@
         "/brokers": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_getActiveBrokers",
                 "produces": [
                     "application/json"
                 ],
@@ -5230,7 +5218,6 @@
         "/brokers/backlog-quota-check": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_backlogQuotaCheck",
                 "produces": [
                     "application/json"
                 ],
@@ -5254,7 +5241,6 @@
         "/brokers/configuration": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_getDynamicConfigurationName",
                 "produces": [
                     "application/json"
                 ],
@@ -5281,7 +5267,6 @@
         "/brokers/configuration/runtime": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_getRuntimeConfiguration",
                 "produces": [
                     "application/json"
                 ],
@@ -5308,7 +5293,6 @@
         "/brokers/configuration/values": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_getAllDynamicConfigurations",
                 "produces": [
                     "application/json"
                 ],
@@ -5341,7 +5325,6 @@
         "/brokers/configuration/{configName}": {
             "delete": {
                 "description": "",
-                "operationId": "BrokersBase_deleteDynamicConfiguration",
                 "parameters": [
                     {
                         "in": "path",
@@ -5376,7 +5359,6 @@
         "/brokers/configuration/{configName}/{configValue}": {
             "post": {
                 "description": "",
-                "operationId": "BrokersBase_updateDynamicConfiguration",
                 "parameters": [
                     {
                         "in": "path",
@@ -5420,7 +5402,6 @@
         "/brokers/health": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_healthCheck",
                 "parameters": [
                     {
                         "description": "Topic Version",
@@ -5460,7 +5441,6 @@
         "/brokers/internal-configuration": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_getInternalConfigurationData",
                 "produces": [
                     "application/json"
                 ],
@@ -5484,7 +5464,6 @@
         "/brokers/leaderBroker": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_getLeaderBroker",
                 "produces": [
                     "application/json"
                 ],
@@ -5514,7 +5493,6 @@
         "/brokers/ready": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_isReady",
                 "produces": [
                     "application/json"
                 ],
@@ -5535,7 +5513,6 @@
         "/brokers/shutdown": {
             "post": {
                 "description": "",
-                "operationId": "BrokersBase_shutDownBrokerGracefully",
                 "parameters": [
                     {
                         "description": "if the value absent(value=0) means no concurrent limitation.",
@@ -5576,7 +5553,6 @@
         "/brokers/version": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_version",
                 "produces": [
                     "application/json"
                 ],
@@ -5600,7 +5576,6 @@
         "/brokers/{clusterName}/{brokerId}/ownedNamespaces": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_getOwnedNamespaces",
                 "parameters": [
                     {
                         "in": "path",
@@ -5647,7 +5622,6 @@
         "/brokers/{cluster}": {
             "get": {
                 "description": "",
-                "operationId": "BrokersBase_getActiveBrokers",
                 "parameters": [
                     {
                         "in": "path",
@@ -5692,7 +5666,6 @@
         "/clusters": {
             "get": {
                 "description": "",
-                "operationId": "ClustersBase_getClusters",
                 "produces": [
                     "application/json"
                 ],
@@ -5720,7 +5693,6 @@
         "/clusters/{cluster}": {
             "delete": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_deleteCluster",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -5757,7 +5729,6 @@
             },
             "get": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_getCluster",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -5794,7 +5765,6 @@
             },
             "post": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_updateCluster",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -5843,7 +5813,6 @@
             },
             "put": {
                 "description": "This operation requires Pulsar superuser privileges, and the name cannot contain the '/' characters.",
-                "operationId": "ClustersBase_createCluster",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -5897,7 +5866,6 @@
         "/clusters/{cluster}/failureDomains": {
             "get": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_getFailureDomains",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -5936,7 +5904,6 @@
         "/clusters/{cluster}/failureDomains/{domainName}": {
             "delete": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_deleteFailureDomain",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -5980,7 +5947,6 @@
             },
             "get": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_getDomain",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6027,7 +5993,6 @@
             },
             "post": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_setFailureDomain",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6085,7 +6050,6 @@
         "/clusters/{cluster}/migrate": {
             "post": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_updateClusterMigration",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6143,7 +6107,6 @@
         "/clusters/{cluster}/namespaceIsolationPolicies": {
             "get": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_getNamespaceIsolationPolicies",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6185,7 +6148,6 @@
         "/clusters/{cluster}/namespaceIsolationPolicies/brokers": {
             "get": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_getBrokersWithNamespaceIsolationPolicy",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6231,7 +6193,6 @@
         "/clusters/{cluster}/namespaceIsolationPolicies/brokers/{broker}": {
             "get": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_getBrokerWithNamespaceIsolationPolicy",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6281,7 +6242,6 @@
         "/clusters/{cluster}/namespaceIsolationPolicies/{policyName}": {
             "delete": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_deleteNamespaceIsolationPolicy",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6325,7 +6285,6 @@
             },
             "get": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_getNamespaceIsolationPolicy",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6372,7 +6331,6 @@
             },
             "post": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_setNamespaceIsolationPolicy",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6430,7 +6388,6 @@
         "/clusters/{cluster}/peers": {
             "get": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_getPeerCluster",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6471,7 +6428,6 @@
             },
             "post": {
                 "description": "This operation requires Pulsar superuser privileges.",
-                "operationId": "ClustersBase_setPeerClusterNames",
                 "parameters": [
                     {
                         "description": "The cluster name",
@@ -6528,7 +6484,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getAntiAffinityNamespaces",
                 "parameters": [
                     {
                         "in": "path",
@@ -6581,7 +6536,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_deleteBookieAffinityGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -6623,7 +6577,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getBookieAffinityGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -6673,7 +6626,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getTenantNamespaces",
                 "parameters": [
                     {
                         "in": "path",
@@ -6715,7 +6667,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_deleteNamespace",
                 "parameters": [
                     {
                         "in": "path",
@@ -6777,7 +6728,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -6819,7 +6769,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_createNamespace",
                 "parameters": [
                     {
                         "in": "path",
@@ -6875,7 +6824,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getNamespaceAllowedClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -6923,7 +6871,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setNamespaceAllowedClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -6982,7 +6929,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeNamespaceAntiAffinityGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -7024,7 +6970,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getNamespaceAntiAffinityGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -7066,7 +7011,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setNamespaceAntiAffinityGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -7119,7 +7063,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeAutoSubscriptionCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -7158,7 +7101,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getAutoSubscriptionCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -7200,7 +7142,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setAutoSubscriptionCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -7253,7 +7194,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeAutoTopicCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -7292,7 +7232,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getAutoTopicCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -7334,7 +7273,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setAutoTopicCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -7390,7 +7328,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeBacklogQuota",
                 "parameters": [
                     {
                         "in": "path",
@@ -7442,7 +7379,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setBacklogQuota",
                 "parameters": [
                     {
                         "in": "path",
@@ -7508,7 +7444,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getBacklogQuotaMap",
                 "parameters": [
                     {
                         "in": "path",
@@ -7555,7 +7490,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getBundlesData",
                 "parameters": [
                     {
                         "in": "path",
@@ -7602,7 +7536,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_clearNamespaceBacklog",
                 "parameters": [
                     {
                         "in": "path",
@@ -7650,7 +7583,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_clearNamespaceBacklogForSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -7704,7 +7636,6 @@
                     "application/json"
                 ],
                 "description": "The backlog size is compared to the threshold periodically. A threshold of 0 disabled automatic compaction",
-                "operationId": "Namespaces_deleteCompactionThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -7746,7 +7677,6 @@
                     "application/json"
                 ],
                 "description": "The backlog size is compared to the threshold periodically. A threshold of 0 disabled automatic compaction",
-                "operationId": "Namespaces_getCompactionThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -7789,7 +7719,6 @@
                     "application/json"
                 ],
                 "description": "The backlog size is compared to the threshold periodically. A threshold of 0 disabled automatic compaction",
-                "operationId": "Namespaces_setCompactionThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -7846,7 +7775,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeDeduplication",
                 "parameters": [
                     {
                         "in": "path",
@@ -7885,7 +7813,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getDeduplication",
                 "parameters": [
                     {
                         "in": "path",
@@ -7927,7 +7854,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_modifyDeduplication",
                 "parameters": [
                     {
                         "in": "path",
@@ -7977,7 +7903,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getDeduplicationSnapshotInterval",
                 "parameters": [
                     {
                         "in": "path",
@@ -8020,7 +7945,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setDeduplicationSnapshotInterval",
                 "parameters": [
                     {
                         "in": "path",
@@ -8071,7 +7995,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeDelayedDeliveryPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -8110,7 +8033,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getDelayedDeliveryPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -8155,7 +8077,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setDelayedDeliveryPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -8205,7 +8126,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_deleteDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -8241,7 +8161,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -8283,7 +8202,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -8330,7 +8248,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getEncryptionRequired",
                 "parameters": [
                     {
                         "in": "path",
@@ -8372,7 +8289,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_modifyEncryptionRequired",
                 "parameters": [
                     {
                         "in": "path",
@@ -8425,7 +8341,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeNamespaceEntryFilters",
                 "parameters": [
                     {
                         "in": "path",
@@ -8467,7 +8382,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getEntryFiltersPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -8509,7 +8423,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setEntryFiltersPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -8562,7 +8475,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -8604,7 +8516,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -8649,7 +8560,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -8699,7 +8609,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getIsAllowAutoUpdateSchema",
                 "parameters": [
                     {
                         "in": "path",
@@ -8744,7 +8653,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setIsAllowAutoUpdateSchema",
                 "parameters": [
                     {
                         "in": "path",
@@ -8797,7 +8705,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeMaxConsumersPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -8842,7 +8749,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getMaxConsumersPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -8885,7 +8791,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setMaxConsumersPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -8942,7 +8847,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeMaxConsumersPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -8984,7 +8888,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getMaxConsumersPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -9027,7 +8930,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setMaxConsumersPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -9084,7 +8986,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeMaxProducersPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -9126,7 +9027,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getMaxProducersPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -9169,7 +9069,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setMaxProducersPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -9226,7 +9125,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeMaxSubscriptionsPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -9268,7 +9166,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getMaxSubscriptionsPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -9311,7 +9208,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setMaxSubscriptionsPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -9368,7 +9264,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -9407,7 +9302,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getMaxTopicsPerNamespace",
                 "parameters": [
                     {
                         "in": "path",
@@ -9450,7 +9344,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -9501,7 +9394,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeMaxUnackedmessagesPerConsumer",
                 "parameters": [
                     {
                         "in": "path",
@@ -9540,7 +9432,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getMaxUnackedMessagesPerConsumer",
                 "parameters": [
                     {
                         "in": "path",
@@ -9583,7 +9474,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setMaxUnackedMessagesPerConsumer",
                 "parameters": [
                     {
                         "in": "path",
@@ -9640,7 +9530,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeMaxUnackedmessagesPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -9679,7 +9568,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getMaxUnackedmessagesPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -9722,7 +9610,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setMaxUnackedMessagesPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -9779,7 +9666,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeNamespaceMessageTTL",
                 "parameters": [
                     {
                         "in": "path",
@@ -9821,7 +9707,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getNamespaceMessageTTL",
                 "parameters": [
                     {
                         "in": "path",
@@ -9864,7 +9749,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setNamespaceMessageTTL",
                 "parameters": [
                     {
                         "in": "path",
@@ -9918,7 +9802,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_clearOffloadDeletionLag",
                 "parameters": [
                     {
                         "in": "path",
@@ -9960,7 +9843,6 @@
                     "application/json"
                 ],
                 "description": "A negative value denotes that deletion has been completely disabled. 'null' denotes that the topics in the namespace will fall back to the broker default for deletion lag.",
-                "operationId": "Namespaces_getOffloadDeletionLag",
                 "parameters": [
                     {
                         "in": "path",
@@ -10003,7 +9885,6 @@
                     "application/json"
                 ],
                 "description": "A negative value disables the deletion completely.",
-                "operationId": "Namespaces_setOffloadDeletionLag",
                 "parameters": [
                     {
                         "in": "path",
@@ -10060,7 +9941,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getOffloadPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -10102,7 +9982,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setOffloadPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -10158,7 +10037,6 @@
                     "application/json"
                 ],
                 "description": "A negative value disables automatic offloading",
-                "operationId": "Namespaces_getOffloadThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -10201,7 +10079,6 @@
                     "application/json"
                 ],
                 "description": "-1 will revert to using the cluster default. A negative value disables automatic offloading. ",
-                "operationId": "Namespaces_setOffloadThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -10258,7 +10135,6 @@
                     "application/json"
                 ],
                 "description": "A negative value disables automatic offloading",
-                "operationId": "Namespaces_getOffloadThresholdInSeconds",
                 "parameters": [
                     {
                         "in": "path",
@@ -10301,7 +10177,6 @@
                     "application/json"
                 ],
                 "description": "A negative value disables automatic offloading",
-                "operationId": "Namespaces_setOffloadThresholdInSeconds",
                 "parameters": [
                     {
                         "in": "path",
@@ -10348,7 +10223,6 @@
                     "application/json"
                 ],
                 "description": "Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<AuthAction>>. Please refer to this structure for details.",
-                "operationId": "Namespaces_getPermissions",
                 "parameters": [
                     {
                         "in": "path",
@@ -10406,7 +10280,6 @@
                     "application/json"
                 ],
                 "description": "Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<String>>. Please refer to this structure for details.",
-                "operationId": "Namespaces_getPermissionOnSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -10456,7 +10329,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_revokePermissionsOnNamespace",
                 "parameters": [
                     {
                         "in": "path",
@@ -10501,7 +10373,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_grantPermissionOnNamespace",
                 "parameters": [
                     {
                         "in": "path",
@@ -10574,7 +10445,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_deletePersistence",
                 "parameters": [
                     {
                         "in": "path",
@@ -10610,7 +10480,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getPersistence",
                 "parameters": [
                     {
                         "in": "path",
@@ -10655,7 +10524,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setPersistence",
                 "parameters": [
                     {
                         "in": "path",
@@ -10711,7 +10579,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setBookieAffinityGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -10767,7 +10634,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_clearProperties",
                 "parameters": [
                     {
                         "in": "path",
@@ -10806,7 +10672,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getProperties",
                 "parameters": [
                     {
                         "in": "path",
@@ -10851,7 +10716,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setProperties",
                 "parameters": [
                     {
                         "in": "path",
@@ -10904,7 +10768,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeProperty",
                 "parameters": [
                     {
                         "in": "path",
@@ -10949,7 +10812,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getProperty",
                 "parameters": [
                     {
                         "in": "path",
@@ -10999,7 +10861,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setProperty",
                 "parameters": [
                     {
                         "in": "path",
@@ -11052,7 +10913,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeOffloadPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -11099,7 +10959,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getNamespaceReplicationClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -11148,7 +11007,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setNamespaceReplicationClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -11207,7 +11065,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeReplicatorDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -11243,7 +11100,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getReplicatorDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -11285,7 +11141,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setReplicatorDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -11332,7 +11187,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeNamespaceResourceGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -11374,7 +11228,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getNamespaceResourceGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -11418,7 +11271,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setNamespaceResourceGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -11468,7 +11320,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeRetention",
                 "parameters": [
                     {
                         "in": "path",
@@ -11522,7 +11373,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getRetention",
                 "parameters": [
                     {
                         "in": "path",
@@ -11564,7 +11414,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setRetention",
                 "parameters": [
                     {
                         "in": "path",
@@ -11620,7 +11469,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_scanOffloadedLedgers",
                 "parameters": [
                     {
                         "in": "path",
@@ -11661,7 +11509,6 @@
                     "application/json"
                 ],
                 "description": "The value AutoUpdateDisabled prevents producers from updating the schema.  If set to AutoUpdateDisabled, schemas must be updated through the REST api",
-                "operationId": "Namespaces_getSchemaAutoUpdateCompatibilityStrategy",
                 "parameters": [
                     {
                         "in": "path",
@@ -11716,7 +11563,6 @@
                     "application/json"
                 ],
                 "description": "The value AutoUpdateDisabled prevents producers from updating the schema.  If set to AutoUpdateDisabled, schemas must be updated through the REST api",
-                "operationId": "Namespaces_setSchemaAutoUpdateCompatibilityStrategy",
                 "parameters": [
                     {
                         "in": "path",
@@ -11769,7 +11615,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getSchemaCompatibilityStrategy",
                 "parameters": [
                     {
                         "in": "path",
@@ -11825,7 +11670,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setSchemaCompatibilityStrategy",
                 "parameters": [
                     {
                         "in": "path",
@@ -11878,7 +11722,6 @@
                     "application/json"
                 ],
                 "description": "If the flag is set to true, when a producer without a schema attempts to produce to a topic with schema in this namespace, the producer will be failed to connect. PLEASE be carefully on using this, since non-java clients don't support schema.if you enable this setting, it will cause non-java clients failed to produce.",
-                "operationId": "Namespaces_getSchemaValidtionEnforced",
                 "parameters": [
                     {
                         "in": "path",
@@ -11927,7 +11770,6 @@
                     "application/json"
                 ],
                 "description": "If the flag is set to true, when a producer without a schema attempts to produce to a topic with schema in this namespace, the producer will be failed to connect. PLEASE be carefully on using this, since non-java clients don't support schema.if you enable this setting, it will cause non-java clients failed to produce.",
-                "operationId": "Namespaces_setSchemaValidationEnforced",
                 "parameters": [
                     {
                         "in": "path",
@@ -11980,7 +11822,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_deleteSubscribeRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -12016,7 +11857,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getSubscribeRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -12058,7 +11898,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setSubscribeRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -12105,7 +11944,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getSubscriptionAuthMode",
                 "parameters": [
                     {
                         "in": "path",
@@ -12151,7 +11989,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setSubscriptionAuthMode",
                 "parameters": [
                     {
                         "in": "path",
@@ -12204,7 +12041,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_deleteSubscriptionDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -12240,7 +12076,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getSubscriptionDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -12282,7 +12117,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setSubscriptionDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -12329,7 +12163,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeSubscriptionExpirationTime",
                 "parameters": [
                     {
                         "in": "path",
@@ -12368,7 +12201,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getSubscriptionExpirationTime",
                 "parameters": [
                     {
                         "in": "path",
@@ -12411,7 +12243,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setSubscriptionExpirationTime",
                 "parameters": [
                     {
                         "in": "path",
@@ -12465,7 +12296,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_removeSubscriptionTypesEnabled",
                 "parameters": [
                     {
                         "in": "path",
@@ -12504,7 +12334,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getSubscriptionTypesEnabled",
                 "parameters": [
                     {
                         "in": "path",
@@ -12559,7 +12388,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_setSubscriptionTypesEnabled",
                 "parameters": [
                     {
                         "in": "path",
@@ -12621,7 +12449,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getTopics",
                 "parameters": [
                     {
                         "in": "path",
@@ -12688,7 +12515,6 @@
                     "application/json"
                 ],
                 "description": "Unload an active namespace from the current broker serving it. Performing this operation will let the brokerremoves all producers, consumers, and connections using this namespace, and close all topics (includingtheir persistent store). During that operation, the namespace is marked as tentatively unavailable until thebroker completes the unloading action. This operation requires strictly super user privileges, since it wouldresult in non-persistent message loss and unexpected connection closure to the clients.",
-                "operationId": "Namespaces_unloadNamespace",
                 "parameters": [
                     {
                         "in": "path",
@@ -12735,7 +12561,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_unsubscribeNamespace",
                 "parameters": [
                     {
                         "in": "path",
@@ -12789,7 +12614,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_deleteNamespaceBundle",
                 "parameters": [
                     {
                         "in": "path",
@@ -12856,7 +12680,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_clearNamespaceBundleBacklog",
                 "parameters": [
                     {
                         "in": "path",
@@ -12913,7 +12736,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_clearNamespaceBundleBacklogForSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -12976,7 +12798,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_splitNamespaceBundle",
                 "parameters": [
                     {
                         "in": "path",
@@ -13059,7 +12880,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_getTopicHashPositions",
                 "parameters": [
                     {
                         "in": "path",
@@ -13119,7 +12939,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_unloadNamespaceBundle",
                 "parameters": [
                     {
                         "in": "path",
@@ -13182,7 +13001,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "Namespaces_unsubscribeNamespaceBundle",
                 "parameters": [
                     {
                         "in": "path",
@@ -13239,7 +13057,6 @@
         "/non-persistent/{tenant}/{namespace}": {
             "get": {
                 "description": "",
-                "operationId": "NonPersistentTopics_getList",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -13311,7 +13128,6 @@
         "/non-persistent/{tenant}/{namespace}/partitioned": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPartitionedTopicList",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -13373,7 +13189,6 @@
         "/non-persistent/{tenant}/{namespace}/{bundle}": {
             "get": {
                 "description": "",
-                "operationId": "NonPersistentTopics_getListFromBundle",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -13438,7 +13253,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}": {
             "delete": {
                 "description": "The topic cannot be deleted if delete is not forcefully and there's any active subscription or producer connected to the it. Force delete ignores connected clients and deletes topic by explicitly closing them.",
-                "operationId": "PersistentTopics_deleteTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -13511,7 +13325,6 @@
             },
             "put": {
                 "description": "This is the only REST endpoint from which non-partitioned topics could be created.",
-                "operationId": "PersistentTopics_createNonPartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -13596,7 +13409,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/all_subscription/expireMessages/{expireTimeInSeconds}": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_expireMessagesForAllSubscriptions",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -13678,7 +13490,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/autoSubscriptionCreation": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeAutoSubscriptionCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -13741,7 +13552,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getAutoSubscriptionCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -13813,7 +13623,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setAutoSubscriptionCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -13886,7 +13695,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/backlog": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getBacklog",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -13947,7 +13755,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/backlogQuota": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeBacklogQuota",
                 "parameters": [
                     {
                         "in": "path",
@@ -14020,7 +13827,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setBacklogQuota",
                 "parameters": [
                     {
                         "in": "path",
@@ -14107,7 +13913,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/backlogQuotaMap": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getBacklogQuotaMap",
                 "parameters": [
                     {
                         "in": "path",
@@ -14182,7 +13987,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/backlogSize": {
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_getBacklogSizeByMessageId",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -14250,7 +14054,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/compaction": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_compactionStatus",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -14324,7 +14127,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_compact",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -14400,7 +14202,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/compactionThreshold": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeCompactionThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -14463,7 +14264,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getCompactionThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -14537,7 +14337,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setCompactionThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -14612,7 +14411,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/createMissedPartitions": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_createMissedPartitions",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -14674,7 +14472,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/deduplicationEnabled": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeDeduplication",
                 "parameters": [
                     {
                         "in": "path",
@@ -14737,7 +14534,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getDeduplication",
                 "parameters": [
                     {
                         "in": "path",
@@ -14807,7 +14603,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setDeduplication",
                 "parameters": [
                     {
                         "in": "path",
@@ -14878,7 +14673,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/deduplicationSnapshotInterval": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteDeduplicationSnapshotInterval",
                 "parameters": [
                     {
                         "in": "path",
@@ -14935,7 +14729,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getDeduplicationSnapshotInterval",
                 "parameters": [
                     {
                         "in": "path",
@@ -14999,7 +14792,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setDeduplicationSnapshotInterval",
                 "parameters": [
                     {
                         "in": "path",
@@ -15068,7 +14860,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/delayedDelivery": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteDelayedDeliveryPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -15125,7 +14916,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getDelayedDeliveryPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -15195,7 +14985,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setDelayedDeliveryPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -15263,7 +15052,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/dispatchRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -15326,7 +15114,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -15399,7 +15186,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -15473,7 +15259,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/entryFilters": {
             "delete": {
                 "description": "",
-                "operationId": "NonPersistentTopics_removeEntryFilters",
                 "parameters": [
                     {
                         "in": "path",
@@ -15536,7 +15321,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "NonPersistentTopics_getEntryFilters",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -15606,7 +15390,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "NonPersistentTopics_setEntryFilters",
                 "parameters": [
                     {
                         "in": "path",
@@ -15680,7 +15463,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/examinemessage": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_examineMessage",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -15768,7 +15550,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/inactiveTopicPolicies": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -15825,7 +15606,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -15895,7 +15675,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -15963,7 +15742,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/internal-info": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getManagedLedgerInfo",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -16033,7 +15811,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/internalStats": {
             "get": {
                 "description": "",
-                "operationId": "NonPersistentTopics_getInternalStats",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -16110,7 +15887,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/lastMessageId": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getLastMessageId",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -16186,7 +15962,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/ledger/{ledgerId}/entry/{entryId}": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMessageById",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -16275,7 +16050,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/maxConsumers": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxConsumers",
                 "parameters": [
                     {
                         "in": "path",
@@ -16338,7 +16112,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxConsumers",
                 "parameters": [
                     {
                         "in": "path",
@@ -16412,7 +16185,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxConsumers",
                 "parameters": [
                     {
                         "in": "path",
@@ -16490,7 +16262,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/maxConsumersPerSubscription": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxConsumersPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -16553,7 +16324,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxConsumersPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -16620,7 +16390,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxConsumersPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -16695,7 +16464,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/maxMessageSize": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxMessageSize",
                 "parameters": [
                     {
                         "in": "path",
@@ -16758,7 +16526,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxMessageSize",
                 "parameters": [
                     {
                         "in": "path",
@@ -16825,7 +16592,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxMessageSize",
                 "parameters": [
                     {
                         "in": "path",
@@ -16903,7 +16669,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/maxProducers": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxProducers",
                 "parameters": [
                     {
                         "in": "path",
@@ -16966,7 +16731,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxProducers",
                 "parameters": [
                     {
                         "in": "path",
@@ -17040,7 +16804,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxProducers",
                 "parameters": [
                     {
                         "in": "path",
@@ -17118,7 +16881,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/maxSubscriptionsPerTopic": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxSubscriptionsPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -17181,7 +16943,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxSubscriptionsPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -17248,7 +17009,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxSubscriptionsPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -17326,7 +17086,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/maxUnackedMessagesOnConsumer": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteMaxUnackedMessagesOnConsumer",
                 "parameters": [
                     {
                         "in": "path",
@@ -17383,7 +17142,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxUnackedMessagesOnConsumer",
                 "parameters": [
                     {
                         "in": "path",
@@ -17454,7 +17212,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxUnackedMessagesOnConsumer",
                 "parameters": [
                     {
                         "in": "path",
@@ -17523,7 +17280,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/maxUnackedMessagesOnSubscription": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteMaxUnackedMessagesOnSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -17580,7 +17336,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxUnackedMessagesOnSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -17651,7 +17406,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxUnackedMessagesOnSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -17720,7 +17474,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/messageTTL": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMessageTTL",
                 "parameters": [
                     {
                         "in": "path",
@@ -17783,7 +17536,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMessageTTL",
                 "parameters": [
                     {
                         "in": "path",
@@ -17854,7 +17606,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMessageTTL",
                 "parameters": [
                     {
                         "in": "path",
@@ -17927,7 +17678,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/messageid/{timestamp}": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMessageIdByTimestamp",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18011,7 +17761,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/offload": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_offloadStatus",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18085,7 +17834,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_triggerOffload",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18164,7 +17912,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/offloadPolicies": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeOffloadPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -18221,7 +17968,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getOffloadPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -18291,7 +18037,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setOffloadPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -18359,7 +18104,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/partitioned-internalStats": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPartitionedStatsInternal",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18432,7 +18176,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/partitioned-stats": {
             "get": {
                 "description": "",
-                "operationId": "NonPersistentTopics_getPartitionedStats",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18537,7 +18280,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/partitions": {
             "delete": {
                 "description": "It will also delete all the partitions of the topic if it exists.",
-                "operationId": "PersistentTopics_deletePartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18613,7 +18355,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "NonPersistentTopics_getPartitionedMetadata",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18692,7 +18433,6 @@
             },
             "post": {
                 "description": "It increments partitions of existing partitioned-topic",
-                "operationId": "PersistentTopics_updatePartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18785,7 +18525,6 @@
             },
             "put": {
                 "description": "It needs to be called before creating a producer on a partitioned topic.",
-                "operationId": "NonPersistentTopics_createPartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18871,7 +18610,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/permissions": {
             "get": {
                 "description": "Retrieve the effective permissions for a topic. These permissions are defined by the permissions set at thenamespace level combined (union) with any eventual specific permission set on the topic.Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<AuthAction>>. Please refer to this structure for details.",
-                "operationId": "PersistentTopics_getPermissionsOnTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -18941,7 +18679,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/permissions/{role}": {
             "delete": {
                 "description": "Revoke permissions to a role on a single topic. If the permission was not set at the topiclevel, but rather at the namespace level, this operation will return an error (HTTP status code 412).",
-                "operationId": "PersistentTopics_revokePermissionsOnTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -19005,7 +18742,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_grantPermissionsOnTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -19094,7 +18830,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/persistence": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removePersistence",
                 "parameters": [
                     {
                         "in": "path",
@@ -19157,7 +18892,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPersistence",
                 "parameters": [
                     {
                         "in": "path",
@@ -19230,7 +18964,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setPersistence",
                 "parameters": [
                     {
                         "in": "path",
@@ -19307,7 +19040,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/properties": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -19380,7 +19112,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -19454,7 +19185,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_updateProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -19536,7 +19266,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/publishRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removePublishRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -19599,7 +19328,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPublishRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -19665,7 +19393,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setPublishRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -19739,7 +19466,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/replication": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeReplicationClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -19805,7 +19531,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getReplicationClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -19871,7 +19596,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setReplicationClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -19944,7 +19668,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/replicatorDispatchRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeReplicatorDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -20007,7 +19730,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getReplicatorDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -20080,7 +19802,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setReplicatorDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -20157,7 +19878,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/retention": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeRetention",
                 "parameters": [
                     {
                         "in": "path",
@@ -20223,7 +19943,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getRetention",
                 "parameters": [
                     {
                         "in": "path",
@@ -20296,7 +20015,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setRetention",
                 "parameters": [
                     {
                         "in": "path",
@@ -20373,7 +20091,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/schemaCompatibilityStrategy": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSchemaCompatibilityStrategy",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -20441,7 +20158,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSchemaCompatibilityStrategy",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -20521,7 +20237,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_setSchemaCompatibilityStrategy",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -20591,7 +20306,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/schemaValidationEnforced": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSchemaValidationEnforced",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -20654,7 +20368,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSchemaValidationEnforced",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -20720,7 +20433,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/shadowTopics": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteShadowTopics",
                 "parameters": [
                     {
                         "in": "path",
@@ -20776,7 +20488,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getShadowTopics",
                 "parameters": [
                     {
                         "in": "path",
@@ -20835,7 +20546,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_setShadowTopics",
                 "parameters": [
                     {
                         "in": "path",
@@ -20905,7 +20615,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/stats": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getStats",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21002,7 +20711,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscribeRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSubscribeRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -21074,7 +20782,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscribeRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -21147,7 +20854,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSubscribeRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -21221,7 +20927,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}": {
             "delete": {
                 "description": "The subscription cannot be deleted if delete is not forcefully and there are any active consumers attached to it. Force delete ignores connected consumers and deletes subscription by explicitly closing them.",
-                "operationId": "PersistentTopics_deleteSubscription",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21306,7 +21011,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/analyzeBacklog": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_analyzeSubscriptionBacklog",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21392,7 +21096,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/expireMessages": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_expireTopicMessages",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21478,7 +21181,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/expireMessages/{expireTimeInSeconds}": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_expireTopicMessages",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21564,7 +21266,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/position/{messagePosition}": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_peekNthMessage",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21653,7 +21354,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/properties": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptionProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21734,7 +21434,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_updateSubscriptionProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21823,7 +21522,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/replicatedSubscriptionStatus": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getReplicatedSubscriptionStatus",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21898,7 +21596,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setReplicatedSubscriptionStatus",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -21987,7 +21684,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/resetcursor": {
             "post": {
                 "description": "It fence cursor and disconnects all active consumers before resetting cursor.",
-                "operationId": "PersistentTopics_resetCursorOnPosition",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -22076,7 +21772,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/resetcursor/{timestamp}": {
             "post": {
                 "description": "It fence cursor and disconnects all active consumers before resetting cursor.",
-                "operationId": "PersistentTopics_resetCursor",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -22164,7 +21859,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/skip/{numMessages}": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_skipMessages",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -22250,7 +21944,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/skip_all": {
             "post": {
                 "description": "Completely clears the backlog on the subscription.",
-                "operationId": "PersistentTopics_skipAllMessages",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -22330,7 +22023,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscription/{subscriptionName}": {
             "put": {
                 "description": "Creates a subscription on the topic at the specified message id",
-                "operationId": "PersistentTopics_createSubscription",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -22426,7 +22118,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscriptionDispatchRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSubscriptionDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -22489,7 +22180,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptionDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -22562,7 +22252,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSubscriptionDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -22636,7 +22325,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscriptionTypesEnabled": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSubscriptionTypesEnabled",
                 "parameters": [
                     {
                         "in": "path",
@@ -22699,7 +22387,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptionTypesEnabled",
                 "parameters": [
                     {
                         "in": "path",
@@ -22774,7 +22461,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSubscriptionTypesEnabled",
                 "parameters": [
                     {
                         "in": "path",
@@ -22857,7 +22543,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/subscriptions": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptions",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -22933,7 +22618,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/terminate": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_terminate",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23012,7 +22696,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/terminate/partitions": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_terminatePartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23082,7 +22765,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/trim": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_trimTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23155,7 +22837,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/truncate": {
             "delete": {
                 "description": "NonPersistentTopic does not support truncate.",
-                "operationId": "NonPersistentTopics_truncateTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23207,7 +22888,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/unload": {
             "put": {
                 "description": "",
-                "operationId": "NonPersistentTopics_unloadTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23277,7 +22957,6 @@
         "/non-persistent/{tenant}/{namespace}/{topic}/{subName}/dispatchRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSubscriptionLevelDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -23346,7 +23025,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptionLevelDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -23425,7 +23103,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSubscriptionLevelDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -23505,7 +23182,6 @@
         "/persistent/{tenant}/{namespace}": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getList",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23574,7 +23250,6 @@
         "/persistent/{tenant}/{namespace}/partitioned": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPartitionedTopicList",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23636,7 +23311,6 @@
         "/persistent/{tenant}/{namespace}/{topic}": {
             "delete": {
                 "description": "The topic cannot be deleted if delete is not forcefully and there's any active subscription or producer connected to the it. Force delete ignores connected clients and deletes topic by explicitly closing them.",
-                "operationId": "PersistentTopics_deleteTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23709,7 +23383,6 @@
             },
             "put": {
                 "description": "This is the only REST endpoint from which non-partitioned topics could be created.",
-                "operationId": "PersistentTopics_createNonPartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23794,7 +23467,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/all_subscription/expireMessages/{expireTimeInSeconds}": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_expireMessagesForAllSubscriptions",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -23876,7 +23548,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/autoSubscriptionCreation": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeAutoSubscriptionCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -23939,7 +23610,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getAutoSubscriptionCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -24011,7 +23681,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setAutoSubscriptionCreation",
                 "parameters": [
                     {
                         "in": "path",
@@ -24084,7 +23753,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/backlog": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getBacklog",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -24145,7 +23813,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/backlogQuota": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeBacklogQuota",
                 "parameters": [
                     {
                         "in": "path",
@@ -24218,7 +23885,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setBacklogQuota",
                 "parameters": [
                     {
                         "in": "path",
@@ -24305,7 +23971,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/backlogQuotaMap": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getBacklogQuotaMap",
                 "parameters": [
                     {
                         "in": "path",
@@ -24380,7 +24045,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/backlogSize": {
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_getBacklogSizeByMessageId",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -24448,7 +24112,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/compaction": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_compactionStatus",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -24522,7 +24185,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_compact",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -24598,7 +24260,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/compactionThreshold": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeCompactionThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -24661,7 +24322,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getCompactionThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -24735,7 +24395,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setCompactionThreshold",
                 "parameters": [
                     {
                         "in": "path",
@@ -24810,7 +24469,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/createMissedPartitions": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_createMissedPartitions",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -24872,7 +24530,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/deduplicationEnabled": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeDeduplication",
                 "parameters": [
                     {
                         "in": "path",
@@ -24935,7 +24592,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getDeduplication",
                 "parameters": [
                     {
                         "in": "path",
@@ -25005,7 +24661,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setDeduplication",
                 "parameters": [
                     {
                         "in": "path",
@@ -25076,7 +24731,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/deduplicationSnapshotInterval": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteDeduplicationSnapshotInterval",
                 "parameters": [
                     {
                         "in": "path",
@@ -25133,7 +24787,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getDeduplicationSnapshotInterval",
                 "parameters": [
                     {
                         "in": "path",
@@ -25197,7 +24850,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setDeduplicationSnapshotInterval",
                 "parameters": [
                     {
                         "in": "path",
@@ -25266,7 +24918,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/delayedDelivery": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteDelayedDeliveryPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -25323,7 +24974,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getDelayedDeliveryPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -25393,7 +25043,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setDelayedDeliveryPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -25461,7 +25110,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/dispatchRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -25524,7 +25172,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -25597,7 +25244,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -25671,7 +25317,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/entryFilters": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeEntryFilters",
                 "parameters": [
                     {
                         "in": "path",
@@ -25734,7 +25379,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getEntryFilters",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -25804,7 +25448,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setEntryFilters",
                 "parameters": [
                     {
                         "in": "path",
@@ -25878,7 +25521,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/examinemessage": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_examineMessage",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -25966,7 +25608,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/inactiveTopicPolicies": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -26023,7 +25664,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -26093,7 +25733,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setInactiveTopicPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -26161,7 +25800,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/internal-info": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getManagedLedgerInfo",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -26231,7 +25869,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/internalStats": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getInternalStats",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -26311,7 +25948,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/lastMessageId": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getLastMessageId",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -26387,7 +26023,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/ledger/{ledgerId}/entry/{entryId}": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMessageById",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -26476,7 +26111,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/maxConsumers": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxConsumers",
                 "parameters": [
                     {
                         "in": "path",
@@ -26539,7 +26173,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxConsumers",
                 "parameters": [
                     {
                         "in": "path",
@@ -26613,7 +26246,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxConsumers",
                 "parameters": [
                     {
                         "in": "path",
@@ -26691,7 +26323,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/maxConsumersPerSubscription": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxConsumersPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -26754,7 +26385,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxConsumersPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -26821,7 +26451,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxConsumersPerSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -26896,7 +26525,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/maxMessageSize": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxMessageSize",
                 "parameters": [
                     {
                         "in": "path",
@@ -26959,7 +26587,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxMessageSize",
                 "parameters": [
                     {
                         "in": "path",
@@ -27026,7 +26653,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxMessageSize",
                 "parameters": [
                     {
                         "in": "path",
@@ -27104,7 +26730,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/maxProducers": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxProducers",
                 "parameters": [
                     {
                         "in": "path",
@@ -27167,7 +26792,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxProducers",
                 "parameters": [
                     {
                         "in": "path",
@@ -27241,7 +26865,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxProducers",
                 "parameters": [
                     {
                         "in": "path",
@@ -27319,7 +26942,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/maxSubscriptionsPerTopic": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMaxSubscriptionsPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -27382,7 +27004,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxSubscriptionsPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -27449,7 +27070,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxSubscriptionsPerTopic",
                 "parameters": [
                     {
                         "in": "path",
@@ -27527,7 +27147,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/maxUnackedMessagesOnConsumer": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteMaxUnackedMessagesOnConsumer",
                 "parameters": [
                     {
                         "in": "path",
@@ -27584,7 +27203,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxUnackedMessagesOnConsumer",
                 "parameters": [
                     {
                         "in": "path",
@@ -27655,7 +27273,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxUnackedMessagesOnConsumer",
                 "parameters": [
                     {
                         "in": "path",
@@ -27724,7 +27341,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/maxUnackedMessagesOnSubscription": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteMaxUnackedMessagesOnSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -27781,7 +27397,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMaxUnackedMessagesOnSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -27852,7 +27467,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMaxUnackedMessagesOnSubscription",
                 "parameters": [
                     {
                         "in": "path",
@@ -27921,7 +27535,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/messageTTL": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeMessageTTL",
                 "parameters": [
                     {
                         "in": "path",
@@ -27984,7 +27597,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMessageTTL",
                 "parameters": [
                     {
                         "in": "path",
@@ -28055,7 +27667,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setMessageTTL",
                 "parameters": [
                     {
                         "in": "path",
@@ -28128,7 +27739,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/messageid/{timestamp}": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getMessageIdByTimestamp",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -28212,7 +27822,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/offload": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_offloadStatus",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -28286,7 +27895,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_triggerOffload",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -28365,7 +27973,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/offloadPolicies": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeOffloadPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -28422,7 +28029,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getOffloadPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -28492,7 +28098,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setOffloadPolicies",
                 "parameters": [
                     {
                         "in": "path",
@@ -28560,7 +28165,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/partitioned-internalStats": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPartitionedStatsInternal",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -28633,7 +28237,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/partitioned-stats": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPartitionedStats",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -28738,7 +28341,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/partitions": {
             "delete": {
                 "description": "It will also delete all the partitions of the topic if it exists.",
-                "operationId": "PersistentTopics_deletePartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -28814,7 +28416,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPartitionedMetadata",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -28893,7 +28494,6 @@
             },
             "post": {
                 "description": "It increments partitions of existing partitioned-topic",
-                "operationId": "PersistentTopics_updatePartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -28986,7 +28586,6 @@
             },
             "put": {
                 "description": "It needs to be called before creating a producer on a partitioned topic.",
-                "operationId": "PersistentTopics_createPartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -29072,7 +28671,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/permissions": {
             "get": {
                 "description": "Retrieve the effective permissions for a topic. These permissions are defined by the permissions set at thenamespace level combined (union) with any eventual specific permission set on the topic.Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<AuthAction>>. Please refer to this structure for details.",
-                "operationId": "PersistentTopics_getPermissionsOnTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -29142,7 +28740,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/permissions/{role}": {
             "delete": {
                 "description": "Revoke permissions to a role on a single topic. If the permission was not set at the topiclevel, but rather at the namespace level, this operation will return an error (HTTP status code 412).",
-                "operationId": "PersistentTopics_revokePermissionsOnTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -29206,7 +28803,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_grantPermissionsOnTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -29295,7 +28891,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/persistence": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removePersistence",
                 "parameters": [
                     {
                         "in": "path",
@@ -29358,7 +28953,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPersistence",
                 "parameters": [
                     {
                         "in": "path",
@@ -29431,7 +29025,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setPersistence",
                 "parameters": [
                     {
                         "in": "path",
@@ -29508,7 +29101,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/properties": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -29581,7 +29173,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -29655,7 +29246,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_updateProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -29737,7 +29327,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/publishRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removePublishRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -29800,7 +29389,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getPublishRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -29866,7 +29454,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setPublishRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -29940,7 +29527,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/replication": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeReplicationClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -30006,7 +29592,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getReplicationClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -30072,7 +29657,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setReplicationClusters",
                 "parameters": [
                     {
                         "in": "path",
@@ -30145,7 +29729,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/replicatorDispatchRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeReplicatorDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -30208,7 +29791,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getReplicatorDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -30281,7 +29863,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setReplicatorDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -30358,7 +29939,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/retention": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeRetention",
                 "parameters": [
                     {
                         "in": "path",
@@ -30424,7 +30004,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getRetention",
                 "parameters": [
                     {
                         "in": "path",
@@ -30497,7 +30076,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setRetention",
                 "parameters": [
                     {
                         "in": "path",
@@ -30574,7 +30152,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/schemaCompatibilityStrategy": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSchemaCompatibilityStrategy",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -30642,7 +30219,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSchemaCompatibilityStrategy",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -30722,7 +30298,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_setSchemaCompatibilityStrategy",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -30792,7 +30367,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/schemaValidationEnforced": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSchemaValidationEnforced",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -30855,7 +30429,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSchemaValidationEnforced",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -30921,7 +30494,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/shadowTopics": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_deleteShadowTopics",
                 "parameters": [
                     {
                         "in": "path",
@@ -30977,7 +30549,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getShadowTopics",
                 "parameters": [
                     {
                         "in": "path",
@@ -31036,7 +30607,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_setShadowTopics",
                 "parameters": [
                     {
                         "in": "path",
@@ -31106,7 +30676,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/stats": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getStats",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -31203,7 +30772,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscribeRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSubscribeRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -31275,7 +30843,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscribeRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -31348,7 +30915,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSubscribeRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -31422,7 +30988,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}": {
             "delete": {
                 "description": "The subscription cannot be deleted if delete is not forcefully and there are any active consumers attached to it. Force delete ignores connected consumers and deletes subscription by explicitly closing them.",
-                "operationId": "PersistentTopics_deleteSubscription",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -31507,7 +31072,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/analyzeBacklog": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_analyzeSubscriptionBacklog",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -31593,7 +31157,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/expireMessages": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_expireTopicMessages",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -31679,7 +31242,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/expireMessages/{expireTimeInSeconds}": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_expireTopicMessages",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -31765,7 +31327,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/position/{messagePosition}": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_peekNthMessage",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -31854,7 +31415,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/properties": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptionProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -31935,7 +31495,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_updateSubscriptionProperties",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -32024,7 +31583,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/replicatedSubscriptionStatus": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getReplicatedSubscriptionStatus",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -32099,7 +31657,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setReplicatedSubscriptionStatus",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -32188,7 +31745,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/resetcursor": {
             "post": {
                 "description": "It fence cursor and disconnects all active consumers before resetting cursor.",
-                "operationId": "PersistentTopics_resetCursorOnPosition",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -32277,7 +31833,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/resetcursor/{timestamp}": {
             "post": {
                 "description": "It fence cursor and disconnects all active consumers before resetting cursor.",
-                "operationId": "PersistentTopics_resetCursor",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -32365,7 +31920,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/skip/{numMessages}": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_skipMessages",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -32451,7 +32005,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subName}/skip_all": {
             "post": {
                 "description": "Completely clears the backlog on the subscription.",
-                "operationId": "PersistentTopics_skipAllMessages",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -32531,7 +32084,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscription/{subscriptionName}": {
             "put": {
                 "description": "Creates a subscription on the topic at the specified message id",
-                "operationId": "PersistentTopics_createSubscription",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -32627,7 +32179,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscriptionDispatchRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSubscriptionDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -32690,7 +32241,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptionDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -32763,7 +32313,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSubscriptionDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -32837,7 +32386,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscriptionTypesEnabled": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSubscriptionTypesEnabled",
                 "parameters": [
                     {
                         "in": "path",
@@ -32900,7 +32448,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptionTypesEnabled",
                 "parameters": [
                     {
                         "in": "path",
@@ -32975,7 +32522,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSubscriptionTypesEnabled",
                 "parameters": [
                     {
                         "in": "path",
@@ -33058,7 +32604,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/subscriptions": {
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptions",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -33134,7 +32679,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/terminate": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_terminate",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -33213,7 +32757,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/terminate/partitions": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_terminatePartitionedTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -33283,7 +32826,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/trim": {
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_trimTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -33356,7 +32898,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/truncate": {
             "delete": {
                 "description": "The truncate operation will move all cursors to the end of the topic and delete all inactive ledgers.",
-                "operationId": "PersistentTopics_truncateTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -33420,7 +32961,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/unload": {
             "put": {
                 "description": "",
-                "operationId": "PersistentTopics_unloadTopic",
                 "parameters": [
                     {
                         "description": "Specify the tenant",
@@ -33490,7 +33030,6 @@
         "/persistent/{tenant}/{namespace}/{topic}/{subName}/dispatchRate": {
             "delete": {
                 "description": "",
-                "operationId": "PersistentTopics_removeSubscriptionLevelDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -33559,7 +33098,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "PersistentTopics_getSubscriptionLevelDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -33638,7 +33176,6 @@
             },
             "post": {
                 "description": "",
-                "operationId": "PersistentTopics_setSubscriptionLevelDispatchRate",
                 "parameters": [
                     {
                         "in": "path",
@@ -33721,7 +33258,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "ResourceQuotas_getDefaultResourceQuota",
                 "produces": [
                     "application/json"
                 ],
@@ -33750,7 +33286,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "ResourceQuotas_setDefaultResourceQuota",
                 "parameters": [
                     {
                         "description": "Default resource quota",
@@ -33792,7 +33327,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "ResourceQuotas_removeNamespaceBundleResourceQuota",
                 "parameters": [
                     {
                         "description": "Tenant name",
@@ -33843,7 +33377,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "ResourceQuotas_getNamespaceBundleResourceQuota",
                 "parameters": [
                     {
                         "description": "Tenant name",
@@ -33897,7 +33430,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "ResourceQuotas_setNamespaceBundleResourceQuota",
                 "parameters": [
                     {
                         "description": "Tenant name",
@@ -33959,7 +33491,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "ResourceGroups_getResourceGroups",
                 "produces": [
                     "application/json"
                 ],
@@ -33990,7 +33521,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "ResourceGroups_deleteResourceGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -34026,7 +33556,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "ResourceGroups_getResourceGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -34062,7 +33591,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "ResourceGroups_createOrUpdateResourceGroup",
                 "parameters": [
                     {
                         "in": "path",
@@ -34106,7 +33634,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "SchemasResource_testCompatibility",
                 "parameters": [
                     {
                         "in": "path",
@@ -34184,7 +33711,6 @@
         "/schemas/{tenant}/{namespace}/{topic}/schema": {
             "delete": {
                 "description": "",
-                "operationId": "SchemasResource_deleteSchema",
                 "parameters": [
                     {
                         "in": "path",
@@ -34255,7 +33781,6 @@
             },
             "get": {
                 "description": "",
-                "operationId": "SchemasResource_getSchema",
                 "parameters": [
                     {
                         "in": "path",
@@ -34322,7 +33847,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "SchemasResource_postSchema",
                 "parameters": [
                     {
                         "in": "path",
@@ -34406,7 +33930,6 @@
         "/schemas/{tenant}/{namespace}/{topic}/schema/{version}": {
             "get": {
                 "description": "",
-                "operationId": "SchemasResource_getSchema",
                 "parameters": [
                     {
                         "in": "path",
@@ -34478,7 +34001,6 @@
         "/schemas/{tenant}/{namespace}/{topic}/schemas": {
             "get": {
                 "description": "",
-                "operationId": "SchemasResource_getAllSchemas",
                 "parameters": [
                     {
                         "in": "path",
@@ -34547,7 +34069,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "SchemasResource_getVersionBySchema",
                 "parameters": [
                     {
                         "in": "path",
@@ -34631,7 +34152,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "TenantsBase_getTenants",
                 "produces": [
                     "application/json"
                 ],
@@ -34664,7 +34184,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "TenantsBase_deleteTenant",
                 "parameters": [
                     {
                         "description": "The tenant name",
@@ -34711,7 +34230,6 @@
                     "application/json"
                 ],
                 "description": "",
-                "operationId": "TenantsBase_getTenantAdmin",
                 "parameters": [
                     {
                         "description": "The tenant name",
@@ -34748,7 +34266,6 @@
                     "application/json"
                 ],
                 "description": "This operation requires Pulsar super-user privileges.",
-                "operationId": "TenantsBase_updateTenant",
                 "parameters": [
                     {
                         "description": "The tenant name",
@@ -34797,7 +34314,6 @@
                     "application/json"
                 ],
                 "description": "This operation requires Pulsar super-user privileges.",
-                "operationId": "TenantsBase_createTenant",
                 "parameters": [
                     {
                         "description": "The tenant name",
@@ -34842,7 +34358,6 @@
         "/worker-stats/functionsmetrics": {
             "get": {
                 "description": "Requested should be executed by Monitoring agent on each worker to fetch the metrics",
-                "operationId": "WorkerStats_getStats",
                 "produces": [
                     "application/json"
                 ],
@@ -34869,7 +34384,6 @@
         "/worker-stats/metrics": {
             "get": {
                 "description": "Request should be executed by Monitoring agent on each worker to fetch the worker-metrics",
-                "operationId": "WorkerStats_getMetrics",
                 "produces": [
                     "application/json"
                 ],
@@ -34896,7 +34410,6 @@
         "/worker/assignments": {
             "get": {
                 "description": "Returns a nested map structure which Swagger does not fully support for display.Structure: Map<String, Set<String>>. Please refer to this structure for details.",
-                "operationId": "Worker_getAssignments",
                 "produces": [
                     "application/json"
                 ],
@@ -34923,7 +34436,6 @@
         "/worker/cluster": {
             "get": {
                 "description": "",
-                "operationId": "Worker_getCluster",
                 "produces": [
                     "application/json"
                 ],
@@ -34950,7 +34462,6 @@
         "/worker/cluster/leader": {
             "get": {
                 "description": "",
-                "operationId": "Worker_getClusterLeader",
                 "produces": [
                     "application/json"
                 ],
@@ -34974,7 +34485,6 @@
         "/worker/cluster/leader/ready": {
             "get": {
                 "description": "",
-                "operationId": "Worker_isLeaderReady",
                 "responses": {
                     "200": {
                         "description": "successful operation",
@@ -34992,7 +34502,6 @@
         "/worker/connectors": {
             "get": {
                 "description": "",
-                "operationId": "Worker_getConnectorsList",
                 "produces": [
                     "application/json"
                 ],
@@ -35022,7 +34531,6 @@
         "/worker/drain": {
             "get": {
                 "description": "",
-                "operationId": "Worker_getDrainStatus",
                 "responses": {
                     "200": {
                         "description": "successful operation",
@@ -35041,7 +34549,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "Worker_drain",
                 "responses": {
                     "204": {
                         "description": "Operation successful"
@@ -35068,7 +34575,6 @@
         "/worker/leader/drain": {
             "get": {
                 "description": "",
-                "operationId": "Worker_getDrainStatusFromLeader",
                 "parameters": [
                     {
                         "in": "query",
@@ -35095,7 +34601,6 @@
             },
             "put": {
                 "description": "",
-                "operationId": "Worker_drainAtLeader",
                 "parameters": [
                     {
                         "in": "query",
@@ -35130,7 +34635,6 @@
         "/worker/rebalance": {
             "put": {
                 "description": "",
-                "operationId": "Worker_rebalance",
                 "responses": {
                     "204": {
                         "description": "Operation successful"

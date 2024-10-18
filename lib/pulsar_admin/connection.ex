@@ -8,19 +8,19 @@ defmodule PulsarAdmin.Connection do
   Additional middleware can be set in the compile-time or runtime configuration:
 
       config :tesla, PulsarAdmin.Connection,
-        base_url: "/admin/v2",
+        base_url: "http://localhost:8080/admin/v2",
         adapter: Tesla.Adapter.Hackney
 
   The default base URL can also be set as:
 
       config :pulsar_admin,
-        :base_url, "/admin/v2"
+        :base_url, "http://localhost:8080/admin/v2"
   """
 
   @default_base_url Application.compile_env(
                       :pulsar_admin,
                       :base_url,
-                      "/admin/v2"
+                      "http://localhost:8080/admin/v2"
                     )
 
 
