@@ -10,6 +10,35 @@ defmodule PulsarAdmin.Api.Bookies do
   import PulsarAdmin.RequestBuilder
 
   @doc """
+  Gets raw information for all the bookies in the cluster
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.BookiesClusterInfo.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec bookies_all_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BookiesClusterInfo.t} | {:error, Tesla.Env.t}
+  def bookies_all_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/bookies/all")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.BookiesClusterInfo},
+      {403, false}
+    ])
+  end
+
+  @doc """
   Removed the rack placement information for a specific bookie in the cluster
 
   ### Parameters
@@ -23,8 +52,8 @@ defmodule PulsarAdmin.Api.Bookies do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec bookies_delete_bookie_rack_info(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def bookies_delete_bookie_rack_info(connection, bookie, _opts \\ []) do
+  @spec bookies_racks_info_bookie_delete(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def bookies_racks_info_bookie_delete(connection, bookie, _opts \\ []) do
     request =
       %{}
       |> method(:delete)
@@ -35,35 +64,6 @@ defmodule PulsarAdmin.Api.Bookies do
     |> Connection.request(request)
     |> evaluate_response([
       {204, false},
-      {403, false}
-    ])
-  end
-
-  @doc """
-  Gets raw information for all the bookies in the cluster
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.BookiesClusterInfo.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec bookies_get_all_bookies(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BookiesClusterInfo.t} | {:error, Tesla.Env.t}
-  def bookies_get_all_bookies(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/bookies/all")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.BookiesClusterInfo},
       {403, false}
     ])
   end
@@ -82,8 +82,8 @@ defmodule PulsarAdmin.Api.Bookies do
   - `{:ok, PulsarAdmin.Model.BookieInfo.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec bookies_get_bookie_rack_info(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BookieInfo.t} | {:error, Tesla.Env.t}
-  def bookies_get_bookie_rack_info(connection, bookie, _opts \\ []) do
+  @spec bookies_racks_info_bookie_get(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BookieInfo.t} | {:error, Tesla.Env.t}
+  def bookies_racks_info_bookie_get(connection, bookie, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -94,35 +94,6 @@ defmodule PulsarAdmin.Api.Bookies do
     |> Connection.request(request)
     |> evaluate_response([
       {200, PulsarAdmin.Model.BookieInfo},
-      {403, false}
-    ])
-  end
-
-  @doc """
-  Gets the rack placement information for all the bookies in the cluster
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec bookies_get_bookies_rack_info(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def bookies_get_bookies_rack_info(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/bookies/racks-info")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
       {403, false}
     ])
   end
@@ -143,8 +114,8 @@ defmodule PulsarAdmin.Api.Bookies do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec bookies_update_bookie_rack_info(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.BookieInfo.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def bookies_update_bookie_rack_info(connection, bookie, group, body, _opts \\ []) do
+  @spec bookies_racks_info_bookie_post(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.BookieInfo.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def bookies_racks_info_bookie_post(connection, bookie, group, body, _opts \\ []) do
     request =
       %{}
       |> method(:post)
@@ -157,6 +128,35 @@ defmodule PulsarAdmin.Api.Bookies do
     |> Connection.request(request)
     |> evaluate_response([
       {204, false},
+      {403, false}
+    ])
+  end
+
+  @doc """
+  Gets the rack placement information for all the bookies in the cluster
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec bookies_racks_info_get(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def bookies_racks_info_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/bookies/racks-info")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
       {403, false}
     ])
   end

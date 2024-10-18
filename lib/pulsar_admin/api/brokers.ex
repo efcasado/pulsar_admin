@@ -22,8 +22,8 @@ defmodule PulsarAdmin.Api.Brokers do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec brokers_base_backlog_quota_check(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def brokers_base_backlog_quota_check(connection, _opts \\ []) do
+  @spec brokers_backlog_quota_check_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def brokers_backlog_quota_check_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -36,68 +36,6 @@ defmodule PulsarAdmin.Api.Brokers do
       {204, false},
       {403, false},
       {500, false}
-    ])
-  end
-
-  @doc """
-  Delete dynamic ServiceConfiguration into metadata only. This operation requires Pulsar super-user privileges.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `config_name` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec brokers_base_delete_dynamic_configuration(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def brokers_base_delete_dynamic_configuration(connection, config_name, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/brokers/configuration/#{config_name}")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
-  Get the list of active brokers (broker ids) in the local cluster.If authorization is not enabled
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec brokers_base_get_active_brokers(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def brokers_base_get_active_brokers(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/brokers")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {401, false},
-      {403, false}
     ])
   end
 
@@ -115,8 +53,8 @@ defmodule PulsarAdmin.Api.Brokers do
   - `{:ok, [%String{}, ...]}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec brokers_base_get_active_brokers_0(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def brokers_base_get_active_brokers_0(connection, cluster, _opts \\ []) do
+  @spec brokers_cluster_get(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def brokers_cluster_get(connection, cluster, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -135,11 +73,13 @@ defmodule PulsarAdmin.Api.Brokers do
   end
 
   @doc """
-  Get value of all dynamic configurations' value overridden on local config
+  Get the list of namespaces served by the specific broker id
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
+  - `cluster_name` (String.t): 
+  - `broker_id` (String.t): 
   - `opts` (keyword): Optional parameters
 
   ### Returns
@@ -147,20 +87,87 @@ defmodule PulsarAdmin.Api.Brokers do
   - `{:ok, %{}}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec brokers_base_get_all_dynamic_configurations(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def brokers_base_get_all_dynamic_configurations(connection, _opts \\ []) do
+  @spec brokers_cluster_name_broker_id_owned_namespaces_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def brokers_cluster_name_broker_id_owned_namespaces_get(connection, cluster_name, broker_id, _opts \\ []) do
     request =
       %{}
       |> method(:get)
-      |> url("/brokers/configuration/values")
+      |> url("/brokers/#{cluster_name}/#{broker_id}/ownedNamespaces")
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
       {200, %{}},
+      {307, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Update dynamic serviceconfiguration into zk only. This operation requires Pulsar super-user privileges.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `config_name` (String.t): 
+  - `config_value` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec brokers_configuration_config_name_config_value_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def brokers_configuration_config_name_config_value_post(connection, config_name, config_value, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/brokers/configuration/#{config_name}/#{config_value}")
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
       {403, false},
       {404, false},
+      {412, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Delete dynamic ServiceConfiguration into metadata only. This operation requires Pulsar super-user privileges.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `config_name` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec brokers_configuration_config_name_delete(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def brokers_configuration_config_name_delete(connection, config_name, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/brokers/configuration/#{config_name}")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {412, false},
       {500, false}
     ])
   end
@@ -178,8 +185,8 @@ defmodule PulsarAdmin.Api.Brokers do
   - `{:ok, [%String{}, ...]}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec brokers_base_get_dynamic_configuration_name(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def brokers_base_get_dynamic_configuration_name(connection, _opts \\ []) do
+  @spec brokers_configuration_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def brokers_configuration_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -191,6 +198,133 @@ defmodule PulsarAdmin.Api.Brokers do
     |> evaluate_response([
       {200, []},
       {403, false}
+    ])
+  end
+
+  @doc """
+  Get all runtime configurations. This operation requires Pulsar super-user privileges.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec brokers_configuration_runtime_get(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def brokers_configuration_runtime_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/brokers/configuration/runtime")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {403, false}
+    ])
+  end
+
+  @doc """
+  Get value of all dynamic configurations' value overridden on local config
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec brokers_configuration_values_get(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def brokers_configuration_values_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/brokers/configuration/values")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {403, false},
+      {404, false},
+      {500, false}
+    ])
+  end
+
+  @doc """
+  Get the list of active brokers (broker ids) in the local cluster.If authorization is not enabled
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec brokers_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def brokers_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/brokers")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {401, false},
+      {403, false}
+    ])
+  end
+
+  @doc """
+  Run a healthCheck against the broker
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+    - `:topicVersion` (String.t): Topic Version
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec brokers_health_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def brokers_health_get(connection, opts \\ []) do
+    optional_params = %{
+      :topicVersion => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/brokers/health")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {500, false}
     ])
   end
 
@@ -207,8 +341,8 @@ defmodule PulsarAdmin.Api.Brokers do
   - `{:ok, PulsarAdmin.Model.InternalConfigurationData.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec brokers_base_get_internal_configuration_data(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.InternalConfigurationData.t} | {:error, Tesla.Env.t}
-  def brokers_base_get_internal_configuration_data(connection, _opts \\ []) do
+  @spec brokers_internal_configuration_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.InternalConfigurationData.t} | {:error, Tesla.Env.t}
+  def brokers_internal_configuration_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -236,8 +370,8 @@ defmodule PulsarAdmin.Api.Brokers do
   - `{:ok, PulsarAdmin.Model.BrokerInfo.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec brokers_base_get_leader_broker(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BrokerInfo.t} | {:error, Tesla.Env.t}
-  def brokers_base_get_leader_broker(connection, _opts \\ []) do
+  @spec brokers_leader_broker_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BrokerInfo.t} | {:error, Tesla.Env.t}
+  def brokers_leader_broker_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -255,105 +389,6 @@ defmodule PulsarAdmin.Api.Brokers do
   end
 
   @doc """
-  Get the list of namespaces served by the specific broker id
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `cluster_name` (String.t): 
-  - `broker_id` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec brokers_base_get_owned_namespaces(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def brokers_base_get_owned_namespaces(connection, cluster_name, broker_id, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/brokers/#{cluster_name}/#{broker_id}/ownedNamespaces")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {307, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get all runtime configurations. This operation requires Pulsar super-user privileges.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec brokers_base_get_runtime_configuration(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def brokers_base_get_runtime_configuration(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/brokers/configuration/runtime")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {403, false}
-    ])
-  end
-
-  @doc """
-  Run a healthCheck against the broker
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-    - `:topicVersion` (String.t): Topic Version
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec brokers_base_health_check(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def brokers_base_health_check(connection, opts \\ []) do
-    optional_params = %{
-      :topicVersion => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/brokers/health")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
   Check if the broker is fully initialized
 
   ### Parameters
@@ -366,8 +401,8 @@ defmodule PulsarAdmin.Api.Brokers do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec brokers_base_is_ready(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def brokers_base_is_ready(connection, _opts \\ []) do
+  @spec brokers_ready_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def brokers_ready_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -397,8 +432,8 @@ defmodule PulsarAdmin.Api.Brokers do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec brokers_base_shut_down_broker_gracefully(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def brokers_base_shut_down_broker_gracefully(connection, opts \\ []) do
+  @spec brokers_shutdown_post(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def brokers_shutdown_post(connection, opts \\ []) do
     optional_params = %{
       :maxConcurrentUnloadPerSec => :query,
       :forcedTerminateTopic => :query
@@ -422,41 +457,6 @@ defmodule PulsarAdmin.Api.Brokers do
   end
 
   @doc """
-  Update dynamic serviceconfiguration into zk only. This operation requires Pulsar super-user privileges.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `config_name` (String.t): 
-  - `config_value` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec brokers_base_update_dynamic_configuration(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def brokers_base_update_dynamic_configuration(connection, config_name, config_value, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/brokers/configuration/#{config_name}/#{config_value}")
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {412, false},
-      {500, false}
-    ])
-  end
-
-  @doc """
   Get version of current broker
 
   ### Parameters
@@ -469,8 +469,8 @@ defmodule PulsarAdmin.Api.Brokers do
   - `{:ok, String.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec brokers_base_version(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
-  def brokers_base_version(connection, _opts \\ []) do
+  @spec brokers_version_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
+  def brokers_version_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)

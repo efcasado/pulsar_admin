@@ -17,6 +17,7 @@ end
 Documentation can be generated with [ExDoc][] and published on [HexDocs][]. Once published, the docs can be found at
 [https://hexdocs.pm/pulsar_admin][docs].
 
+
 ## Configuration
 
 You can override the URL of your server (e.g. if you have a separate development and production server in your

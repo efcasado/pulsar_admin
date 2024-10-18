@@ -33,7 +33,6 @@ lib/pulsar_admin: $(OAS_FILE)
 	openapi-generator-cli generate \
 		-i $(OAS_FILE) \
 		-g elixir \
-		--skip-validate-spec \
 		--additional-properties=packageName=pulsar_admin \
 		--additional-properties=invokerPackage=PulsarAdmin \
 		-o .

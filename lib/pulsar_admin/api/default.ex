@@ -10,80 +10,6 @@ defmodule PulsarAdmin.Api.Default do
   import PulsarAdmin.RequestBuilder
 
   @doc """
-  Drains this worker, i.e., moves its work-assignments to other workers
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec worker_drain(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def worker_drain(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:put)
-      |> url("/worker/drain")
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {400, false},
-      {403, false},
-      {408, false},
-      {409, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
-  Drains the specified worker, i.e., moves its work-assignments to other workers
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-    - `:workerId` (String.t): 
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec worker_drain_at_leader(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def worker_drain_at_leader(connection, opts \\ []) do
-    optional_params = %{
-      :workerId => :query
-    }
-
-    request =
-      %{}
-      |> method(:put)
-      |> url("/worker/leader/drain")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {400, false},
-      {403, false},
-      {408, false},
-      {409, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
   Fetches information about which Pulsar Functions are assigned to which Pulsar clusters
   Returns a nested map structure which Swagger does not fully support for display.Structure: Map<String, Set<String>>. Please refer to this structure for details.
 
@@ -97,8 +23,8 @@ defmodule PulsarAdmin.Api.Default do
   - `{:ok, %{}}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec worker_get_assignments(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def worker_get_assignments(connection, _opts \\ []) do
+  @spec worker_assignments_get(Tesla.Env.client, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def worker_assignments_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -127,8 +53,8 @@ defmodule PulsarAdmin.Api.Default do
   - `{:ok, [%WorkerInfo{}, ...]}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec worker_get_cluster(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.WorkerInfo.t]} | {:error, Tesla.Env.t}
-  def worker_get_cluster(connection, _opts \\ []) do
+  @spec worker_cluster_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.WorkerInfo.t]} | {:error, Tesla.Env.t}
+  def worker_cluster_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -157,8 +83,8 @@ defmodule PulsarAdmin.Api.Default do
   - `{:ok, PulsarAdmin.Model.WorkerInfo.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec worker_get_cluster_leader(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.WorkerInfo.t} | {:error, Tesla.Env.t}
-  def worker_get_cluster_leader(connection, _opts \\ []) do
+  @spec worker_cluster_leader_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.WorkerInfo.t} | {:error, Tesla.Env.t}
+  def worker_cluster_leader_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -170,6 +96,35 @@ defmodule PulsarAdmin.Api.Default do
     |> evaluate_response([
       {200, PulsarAdmin.Model.WorkerInfo},
       {403, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Checks if this node is the leader and is ready to service requests
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, boolean()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec worker_cluster_leader_ready_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
+  def worker_cluster_leader_ready_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/worker/cluster/leader/ready")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
       {503, false}
     ])
   end
@@ -187,8 +142,8 @@ defmodule PulsarAdmin.Api.Default do
   - `{:ok, [%ConnectorDefinition{}, ...]}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec worker_get_connectors_list(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.ConnectorDefinition.t]} | {:error, Tesla.Env.t}
-  def worker_get_connectors_list(connection, _opts \\ []) do
+  @spec worker_connectors_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.ConnectorDefinition.t]} | {:error, Tesla.Env.t}
+  def worker_connectors_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -218,8 +173,8 @@ defmodule PulsarAdmin.Api.Default do
   - `{:ok, PulsarAdmin.Model.LongRunningProcessStatus.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec worker_get_drain_status(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LongRunningProcessStatus.t} | {:error, Tesla.Env.t}
-  def worker_get_drain_status(connection, _opts \\ []) do
+  @spec worker_drain_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LongRunningProcessStatus.t} | {:error, Tesla.Env.t}
+  def worker_drain_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -231,6 +186,40 @@ defmodule PulsarAdmin.Api.Default do
     |> evaluate_response([
       {200, PulsarAdmin.Model.LongRunningProcessStatus},
       {403, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Drains this worker, i.e., moves its work-assignments to other workers
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec worker_drain_put(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def worker_drain_put(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:put)
+      |> url("/worker/drain")
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {400, false},
+      {403, false},
+      {408, false},
+      {409, false},
       {503, false}
     ])
   end
@@ -249,8 +238,8 @@ defmodule PulsarAdmin.Api.Default do
   - `{:ok, PulsarAdmin.Model.LongRunningProcessStatus.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec worker_get_drain_status_from_leader(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LongRunningProcessStatus.t} | {:error, Tesla.Env.t}
-  def worker_get_drain_status_from_leader(connection, opts \\ []) do
+  @spec worker_leader_drain_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.LongRunningProcessStatus.t} | {:error, Tesla.Env.t}
+  def worker_leader_drain_get(connection, opts \\ []) do
     optional_params = %{
       :workerId => :query
     }
@@ -272,30 +261,41 @@ defmodule PulsarAdmin.Api.Default do
   end
 
   @doc """
-  Checks if this node is the leader and is ready to service requests
+  Drains the specified worker, i.e., moves its work-assignments to other workers
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
   - `opts` (keyword): Optional parameters
+    - `:workerId` (String.t): 
 
   ### Returns
 
-  - `{:ok, boolean()}` on success
+  - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec worker_is_leader_ready(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
-  def worker_is_leader_ready(connection, _opts \\ []) do
+  @spec worker_leader_drain_put(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def worker_leader_drain_put(connection, opts \\ []) do
+    optional_params = %{
+      :workerId => :query
+    }
+
     request =
       %{}
-      |> method(:get)
-      |> url("/worker/cluster/leader/ready")
+      |> method(:put)
+      |> url("/worker/leader/drain")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
-      {200, false},
+      {204, false},
+      {400, false},
+      {403, false},
+      {408, false},
+      {409, false},
       {503, false}
     ])
   end
@@ -313,8 +313,8 @@ defmodule PulsarAdmin.Api.Default do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec worker_rebalance(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def worker_rebalance(connection, _opts \\ []) do
+  @spec worker_rebalance_put(Tesla.Env.client, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def worker_rebalance_put(connection, _opts \\ []) do
     request =
       %{}
       |> method(:put)
@@ -333,37 +333,6 @@ defmodule PulsarAdmin.Api.Default do
   end
 
   @doc """
-  Gets the metrics for Monitoring
-  Request should be executed by Monitoring agent on each worker to fetch the worker-metrics
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, [%Metrics{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec worker_stats_get_metrics(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.Metrics.t]} | {:error, Tesla.Env.t}
-  def worker_stats_get_metrics(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/worker-stats/metrics")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.Metrics},
-      {401, false},
-      {503, false}
-    ])
-  end
-
-  @doc """
   Get metrics for all functions owned by worker
   Requested should be executed by Monitoring agent on each worker to fetch the metrics
 
@@ -377,8 +346,8 @@ defmodule PulsarAdmin.Api.Default do
   - `{:ok, [%WorkerFunctionInstanceStats{}, ...]}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec worker_stats_get_stats(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.WorkerFunctionInstanceStats.t]} | {:error, Tesla.Env.t}
-  def worker_stats_get_stats(connection, _opts \\ []) do
+  @spec worker_stats_functionsmetrics_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.WorkerFunctionInstanceStats.t]} | {:error, Tesla.Env.t}
+  def worker_stats_functionsmetrics_get(connection, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -389,6 +358,37 @@ defmodule PulsarAdmin.Api.Default do
     |> Connection.request(request)
     |> evaluate_response([
       {200, PulsarAdmin.Model.WorkerFunctionInstanceStats},
+      {401, false},
+      {503, false}
+    ])
+  end
+
+  @doc """
+  Gets the metrics for Monitoring
+  Request should be executed by Monitoring agent on each worker to fetch the worker-metrics
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, [%Metrics{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec worker_stats_metrics_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [PulsarAdmin.Model.Metrics.t]} | {:error, Tesla.Env.t}
+  def worker_stats_metrics_get(connection, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/worker-stats/metrics")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.Metrics},
       {401, false},
       {503, false}
     ])

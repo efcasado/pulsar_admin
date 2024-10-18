@@ -10,42 +10,32 @@ defmodule PulsarAdmin.Api.Tenants do
   import PulsarAdmin.RequestBuilder
 
   @doc """
-  Create a new tenant.
-  This operation requires Pulsar super-user privileges.
+  Get the list of existing tenants.
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): The tenant name
   - `opts` (keyword): Optional parameters
-    - `:body` (TenantInfo): TenantInfo
 
   ### Returns
 
-  - `{:ok, nil}` on success
+  - `{:ok, [%String{}, ...]}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec tenants_base_create_tenant(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def tenants_base_create_tenant(connection, tenant, opts \\ []) do
-    optional_params = %{
-      :body => :body
-    }
-
+  @spec tenants_get(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def tenants_get(connection, _opts \\ []) do
     request =
       %{}
-      |> method(:put)
-      |> url("/tenants/#{tenant}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
+      |> method(:get)
+      |> url("/tenants")
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
-      {204, false},
+      {200, []},
       {403, false},
-      {409, false},
-      {412, false}
+      {404, false}
     ])
   end
 
@@ -64,8 +54,8 @@ defmodule PulsarAdmin.Api.Tenants do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec tenants_base_delete_tenant(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def tenants_base_delete_tenant(connection, tenant, opts \\ []) do
+  @spec tenants_tenant_delete(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def tenants_tenant_delete(connection, tenant, opts \\ []) do
     optional_params = %{
       :force => :query
     }
@@ -102,8 +92,8 @@ defmodule PulsarAdmin.Api.Tenants do
   - `{:ok, PulsarAdmin.Model.TenantInfo.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec tenants_base_get_tenant_admin(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.TenantInfo.t} | {:error, Tesla.Env.t}
-  def tenants_base_get_tenant_admin(connection, tenant, _opts \\ []) do
+  @spec tenants_tenant_get(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.TenantInfo.t} | {:error, Tesla.Env.t}
+  def tenants_tenant_get(connection, tenant, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -114,36 +104,6 @@ defmodule PulsarAdmin.Api.Tenants do
     |> Connection.request(request)
     |> evaluate_response([
       {200, PulsarAdmin.Model.TenantInfo},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get the list of existing tenants.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec tenants_base_get_tenants(Tesla.Env.client, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def tenants_base_get_tenants(connection, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/tenants")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
       {403, false},
       {404, false}
     ])
@@ -165,8 +125,8 @@ defmodule PulsarAdmin.Api.Tenants do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec tenants_base_update_tenant(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def tenants_base_update_tenant(connection, tenant, opts \\ []) do
+  @spec tenants_tenant_post(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def tenants_tenant_post(connection, tenant, opts \\ []) do
     optional_params = %{
       :body => :body
     }
@@ -185,6 +145,46 @@ defmodule PulsarAdmin.Api.Tenants do
       {204, false},
       {403, false},
       {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Create a new tenant.
+  This operation requires Pulsar super-user privileges.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): The tenant name
+  - `opts` (keyword): Optional parameters
+    - `:body` (TenantInfo): TenantInfo
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec tenants_tenant_put(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def tenants_tenant_put(connection, tenant, opts \\ []) do
+    optional_params = %{
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/tenants/#{tenant}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
       {409, false},
       {412, false}
     ])

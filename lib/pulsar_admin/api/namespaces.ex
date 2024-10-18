@@ -10,7 +10,143 @@ defmodule PulsarAdmin.Api.Namespaces do
   import PulsarAdmin.RequestBuilder
 
   @doc """
-  Clear backlog for all topics on a namespace.
+  Get all namespaces that are grouped by given anti-affinity group in a given cluster. api can be only accessed by admin of any of the existing tenant
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `cluster` (String.t): 
+  - `group` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:tenant` (String.t): 
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_cluster_anti_affinity_group_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def namespaces_cluster_anti_affinity_group_get(connection, cluster, group, opts \\ []) do
+    optional_params = %{
+      :tenant => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{cluster}/antiAffinity/#{group}")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {403, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Delete the bookie-affinity-group from namespace-local policy.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `property` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_property_namespace_persistence_bookie_affinity_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_property_namespace_persistence_bookie_affinity_delete(connection, property, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{property}/#{namespace}/persistence/bookieAffinity")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get the bookie-affinity-group from namespace-local policy.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `property` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.BookieAffinityGroupDataImpl.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_property_namespace_persistence_bookie_affinity_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BookieAffinityGroupDataImpl.t} | {:error, Tesla.Env.t}
+  def namespaces_property_namespace_persistence_bookie_affinity_get(connection, property, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{property}/#{namespace}/persistence/bookieAffinity")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.BookieAffinityGroupDataImpl},
+      {307, false},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get the list of all the namespaces for a certain tenant.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_get(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def namespaces_tenant_get(connection, tenant, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get the allowed clusters for a namespace.
 
   ### Parameters
 
@@ -18,25 +154,187 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `tenant` (String.t): 
   - `namespace` (String.t): 
   - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_allowed_clusters_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_allowed_clusters_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/allowedClusters")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {403, false},
+      {404, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set the allowed clusters for a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` ([String.t]): List of allowed clusters
+  - `opts` (keyword): Optional parameters
 
   ### Returns
 
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_clear_namespace_backlog(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_clear_namespace_backlog(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
+  @spec namespaces_tenant_namespace_allowed_clusters_post(Tesla.Env.client, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_allowed_clusters_post(connection, tenant, namespace, body, _opts \\ []) do
     request =
       %{}
       |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/clearBacklog")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
+      |> url("/namespaces/#{tenant}/#{namespace}/allowedClusters")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {400, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove anti-affinity group of a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_anti_affinity_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_anti_affinity_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/antiAffinity")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get anti-affinity group of a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, String.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_anti_affinity_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_anti_affinity_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/antiAffinity")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set anti-affinity group for a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (String.t): Anti-affinity group for the specified namespace
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_anti_affinity_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_anti_affinity_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/antiAffinity")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove override of broker's allowAutoSubscriptionCreation in a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_auto_subscription_creation_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_auto_subscription_creation_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/autoSubscriptionCreation")
       |> Enum.into([])
 
     connection
@@ -49,32 +347,276 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Clear backlog for a given subscription on all topics on a namespace.
+  Get autoSubscriptionCreation info in a namespace
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
   - `tenant` (String.t): 
   - `namespace` (String.t): 
-  - `subscription` (String.t): 
   - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_auto_subscription_creation_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_auto_subscription_creation_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/autoSubscriptionCreation")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Override broker's allowAutoSubscriptionCreation setting for a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:body` (AutoSubscriptionCreationOverride): Settings for automatic subscription creation
 
   ### Returns
 
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_clear_namespace_backlog_for_subscription(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_clear_namespace_backlog_for_subscription(connection, tenant, namespace, subscription, opts \\ []) do
+  @spec namespaces_tenant_namespace_auto_subscription_creation_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_auto_subscription_creation_post(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
-      :authoritative => :query
+      :body => :body
     }
 
     request =
       %{}
       |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/clearBacklog/#{subscription}")
+      |> url("/namespaces/#{tenant}/#{namespace}/autoSubscriptionCreation")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {400, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Remove override of broker's allowAutoTopicCreation in a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_auto_topic_creation_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_auto_topic_creation_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/autoTopicCreation")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get autoTopicCreation info in a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.AutoTopicCreationOverrideImpl.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_auto_topic_creation_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.AutoTopicCreationOverrideImpl.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_auto_topic_creation_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/autoTopicCreation")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.AutoTopicCreationOverrideImpl},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Override broker's allowAutoTopicCreation setting for a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (AutoTopicCreationOverride): Settings for automatic topic creation
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_auto_topic_creation_post(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.AutoTopicCreationOverride.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_auto_topic_creation_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/autoTopicCreation")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {400, false},
+      {403, false},
+      {404, false},
+      {406, false}
+    ])
+  end
+
+  @doc """
+  Remove a backlog quota policy from a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:backlogQuotaType` (String.t): 
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_backlog_quota_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_backlog_quota_delete(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :backlogQuotaType => :query
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/backlogQuota")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Get backlog quota map on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_backlog_quota_map_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_backlog_quota_map_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/backlogQuotaMap")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+   Set a backlog quota for all the topics on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:backlogQuotaType` (String.t): 
+    - `:body` (BacklogQuota): Backlog quota for all topics of the specified namespace
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_backlog_quota_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_backlog_quota_post(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :backlogQuotaType => :query,
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/backlogQuota")
       |> add_optional_params(optional_params, opts)
       |> ensure_body()
       |> Enum.into([])
@@ -84,7 +626,9 @@ defmodule PulsarAdmin.Api.Namespaces do
     |> evaluate_response([
       {204, false},
       {403, false},
-      {404, false}
+      {404, false},
+      {409, false},
+      {412, false}
     ])
   end
 
@@ -105,8 +649,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_clear_namespace_bundle_backlog(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_clear_namespace_bundle_backlog(connection, tenant, namespace, bundle, opts \\ []) do
+  @spec namespaces_tenant_namespace_bundle_clear_backlog_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_bundle_clear_backlog_post(connection, tenant, namespace, bundle, opts \\ []) do
     optional_params = %{
       :authoritative => :query
     }
@@ -147,8 +691,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_clear_namespace_bundle_backlog_for_subscription(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_clear_namespace_bundle_backlog_for_subscription(connection, tenant, namespace, subscription, bundle, opts \\ []) do
+  @spec namespaces_tenant_namespace_bundle_clear_backlog_subscription_post(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_bundle_clear_backlog_subscription_post(connection, tenant, namespace, subscription, bundle, opts \\ []) do
     optional_params = %{
       :authoritative => :query
     }
@@ -172,32 +716,42 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Clear the namespace configured offload deletion lag. The topics in the namespace will fallback to using the default configured deletion lag for the broker
+  Delete a namespace bundle and all the topics under it.
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
   - `tenant` (String.t): 
   - `namespace` (String.t): 
+  - `bundle` (String.t): 
   - `opts` (keyword): Optional parameters
+    - `:force` (boolean()): 
+    - `:authoritative` (boolean()): 
 
   ### Returns
 
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_clear_offload_deletion_lag(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_clear_offload_deletion_lag(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_bundle_delete(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_bundle_delete(connection, tenant, namespace, bundle, opts \\ []) do
+    optional_params = %{
+      :force => :query,
+      :authoritative => :query
+    }
+
     request =
       %{}
       |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/offloadDeletionLagMs")
+      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}")
+      |> add_optional_params(optional_params, opts)
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
-      {200, false},
+      {204, false},
+      {307, false},
       {403, false},
       {404, false},
       {409, false}
@@ -205,26 +759,164 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Clear properties on a given namespace.
+  Split a namespace bundle
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
   - `tenant` (String.t): 
   - `namespace` (String.t): 
+  - `bundle` (String.t): 
   - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): 
+    - `:unload` (boolean()): 
+    - `:splitAlgorithmName` (String.t): 
+    - `:body` ([integer()]): splitBoundaries
 
   ### Returns
 
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_clear_properties(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_clear_properties(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_bundle_split_put(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_bundle_split_put(connection, tenant, namespace, bundle, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :unload => :query,
+      :splitAlgorithmName => :query,
+      :body => :body
+    }
+
     request =
       %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/properties")
+      |> method(:put)
+      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}/split")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get hash positions for topics
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `bundle` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:topics` ([String.t]): 
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.TopicHashPositions.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_bundle_topic_hash_positions_get(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.TopicHashPositions.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_bundle_topic_hash_positions_get(connection, tenant, namespace, bundle, opts \\ []) do
+    optional_params = %{
+      :topics => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}/topicHashPositions")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.TopicHashPositions},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Unload a namespace bundle
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `bundle` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): 
+    - `:destinationBroker` (String.t): 
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_bundle_unload_put(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_bundle_unload_put(connection, tenant, namespace, bundle, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query,
+      :destinationBroker => :query
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}/unload")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {307, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Unsubscribes the given subscription on all topics on a namespace bundle.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `subscription` (String.t): 
+  - `bundle` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_bundle_unsubscribe_subscription_post(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_bundle_unsubscribe_subscription_post(connection, tenant, namespace, subscription, bundle, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}/unsubscribe/#{subscription}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
       |> Enum.into([])
 
     connection
@@ -237,7 +929,7 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Creates a new namespace with the specified policies
+  Get the bundles split data.
 
   ### Parameters
 
@@ -245,23 +937,56 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `tenant` (String.t): 
   - `namespace` (String.t): 
   - `opts` (keyword): Optional parameters
-    - `:body` (Policies): Policies for the namespace
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.BundlesDataImpl.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_bundles_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BundlesDataImpl.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_bundles_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/bundles")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.BundlesDataImpl},
+      {403, false},
+      {404, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Clear backlog for all topics on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): 
 
   ### Returns
 
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_create_namespace(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_create_namespace(connection, tenant, namespace, opts \\ []) do
+  @spec namespaces_tenant_namespace_clear_backlog_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_clear_backlog_post(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
-      :body => :body
+      :authoritative => :query
     }
 
     request =
       %{}
-      |> method(:put)
-      |> url("/namespaces/#{tenant}/#{namespace}")
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/clearBacklog")
       |> add_optional_params(optional_params, opts)
       |> ensure_body()
       |> Enum.into([])
@@ -271,33 +996,39 @@ defmodule PulsarAdmin.Api.Namespaces do
     |> evaluate_response([
       {204, false},
       {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
+      {404, false}
     ])
   end
 
   @doc """
-  Delete the bookie-affinity-group from namespace-local policy.
+  Clear backlog for a given subscription on all topics on a namespace.
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
-  - `property` (String.t): 
+  - `tenant` (String.t): 
   - `namespace` (String.t): 
+  - `subscription` (String.t): 
   - `opts` (keyword): Optional parameters
+    - `:authoritative` (boolean()): 
 
   ### Returns
 
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_delete_bookie_affinity_group(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_delete_bookie_affinity_group(connection, property, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_clear_backlog_subscription_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_clear_backlog_subscription_post(connection, tenant, namespace, subscription, opts \\ []) do
+    optional_params = %{
+      :authoritative => :query
+    }
+
     request =
       %{}
-      |> method(:delete)
-      |> url("/namespaces/#{property}/#{namespace}/persistence/bookieAffinity")
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/clearBacklog/#{subscription}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
       |> Enum.into([])
 
     connection
@@ -305,8 +1036,7 @@ defmodule PulsarAdmin.Api.Namespaces do
     |> evaluate_response([
       {204, false},
       {403, false},
-      {404, false},
-      {409, false}
+      {404, false}
     ])
   end
 
@@ -326,8 +1056,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_delete_compaction_threshold(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_delete_compaction_threshold(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_compaction_threshold_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_compaction_threshold_delete(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:delete)
@@ -345,7 +1075,77 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Delete dispatch-rate throttling for all topics of the namespace
+  Maximum number of uncompacted bytes in topics before compaction is triggered.
+  The backlog size is compared to the threshold periodically. A threshold of 0 disabled automatic compaction
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_compaction_threshold_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_compaction_threshold_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/compactionThreshold")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set maximum number of uncompacted bytes in a topic before compaction is triggered.
+  The backlog size is compared to the threshold periodically. A threshold of 0 disabled automatic compaction
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (integer()): Maximum number of uncompacted bytes in a topic of the specified namespace
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_compaction_threshold_put(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_compaction_threshold_put(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:put)
+      |> url("/namespaces/#{tenant}/#{namespace}/compactionThreshold")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove broker side deduplication for all topics in a namespace
 
   ### Parameters
 
@@ -359,19 +1159,256 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_delete_dispatch_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_delete_dispatch_rate(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_deduplication_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_deduplication_delete(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/dispatchRate")
+      |> url("/namespaces/#{tenant}/#{namespace}/deduplication")
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
       {204, false},
-      {403, false}
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get broker side deduplication for all topics in a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, boolean()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_deduplication_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_deduplication_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/deduplication")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Enable or disable broker side deduplication for all topics in a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (boolean()): Flag for disabling or enabling broker side deduplication for all topics in the specified namespace
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_deduplication_post(Tesla.Env.client, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_deduplication_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/deduplication")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get deduplicationSnapshotInterval config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_deduplication_snapshot_interval_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_deduplication_snapshot_interval_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/deduplicationSnapshotInterval")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set deduplicationSnapshotInterval config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (integer()): Interval to take deduplication snapshot per topic
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_deduplication_snapshot_interval_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_deduplication_snapshot_interval_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/deduplicationSnapshotInterval")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Delete delayed delivery messages config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_delayed_delivery_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_delayed_delivery_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/delayedDelivery")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get delayed delivery messages config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.DelayedDeliveryPolicies.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_delayed_delivery_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DelayedDeliveryPolicies.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_delayed_delivery_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/delayedDelivery")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.DelayedDeliveryPolicies},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set delayed delivery messages config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:body` (DelayedDeliveryPolicies): Delayed delivery policies for the specified namespace
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_delayed_delivery_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_delayed_delivery_post(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/delayedDelivery")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
     ])
   end
 
@@ -392,8 +1429,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_delete_namespace(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_delete_namespace(connection, tenant, namespace, opts \\ []) do
+  @spec namespaces_tenant_namespace_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_delete(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
       :force => :query,
       :authoritative => :query
@@ -419,50 +1456,7 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Delete a namespace bundle and all the topics under it.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `bundle` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:force` (boolean()): 
-    - `:authoritative` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_delete_namespace_bundle(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_delete_namespace_bundle(connection, tenant, namespace, bundle, opts \\ []) do
-    optional_params = %{
-      :force => :query,
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Delete the persistence configuration for all topics on a namespace
+  Delete dispatch-rate throttling for all topics of the namespace
 
   ### Parameters
 
@@ -476,12 +1470,12 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_delete_persistence(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_delete_persistence(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_dispatch_rate_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_dispatch_rate_delete(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/persistence")
+      |> url("/namespaces/#{tenant}/#{namespace}/dispatchRate")
       |> Enum.into([])
 
     connection
@@ -489,399 +1483,6 @@ defmodule PulsarAdmin.Api.Namespaces do
     |> evaluate_response([
       {204, false},
       {403, false}
-    ])
-  end
-
-  @doc """
-  Delete subscribe-rate throttling for all topics of the namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_delete_subscribe_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_delete_subscribe_rate(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/subscribeRate")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false}
-    ])
-  end
-
-  @doc """
-  Delete Subscription dispatch-rate throttling for all topics of the namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_delete_subscription_dispatch_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_delete_subscription_dispatch_rate(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionDispatchRate")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false}
-    ])
-  end
-
-  @doc """
-  Get all namespaces that are grouped by given anti-affinity group in a given cluster. api can be only accessed by admin of any of the existing tenant
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `cluster` (String.t): 
-  - `group` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:tenant` (String.t): 
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_anti_affinity_namespaces(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def namespaces_get_anti_affinity_namespaces(connection, cluster, group, opts \\ []) do
-    optional_params = %{
-      :tenant => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{cluster}/antiAffinity/#{group}")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {403, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Get autoSubscriptionCreation info in a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_auto_subscription_creation(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl.t} | {:error, Tesla.Env.t}
-  def namespaces_get_auto_subscription_creation(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/autoSubscriptionCreation")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.AutoSubscriptionCreationOverrideImpl},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get autoTopicCreation info in a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.AutoTopicCreationOverrideImpl.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_auto_topic_creation(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.AutoTopicCreationOverrideImpl.t} | {:error, Tesla.Env.t}
-  def namespaces_get_auto_topic_creation(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/autoTopicCreation")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.AutoTopicCreationOverrideImpl},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get backlog quota map on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_backlog_quota_map(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_get_backlog_quota_map(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/backlogQuotaMap")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get the bookie-affinity-group from namespace-local policy.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `property` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.BookieAffinityGroupDataImpl.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_bookie_affinity_group(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BookieAffinityGroupDataImpl.t} | {:error, Tesla.Env.t}
-  def namespaces_get_bookie_affinity_group(connection, property, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{property}/#{namespace}/persistence/bookieAffinity")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.BookieAffinityGroupDataImpl},
-      {307, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get the bundles split data.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.BundlesDataImpl.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_bundles_data(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.BundlesDataImpl.t} | {:error, Tesla.Env.t}
-  def namespaces_get_bundles_data(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/bundles")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.BundlesDataImpl},
-      {403, false},
-      {404, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Maximum number of uncompacted bytes in topics before compaction is triggered.
-  The backlog size is compared to the threshold periodically. A threshold of 0 disabled automatic compaction
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_compaction_threshold(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_compaction_threshold(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/compactionThreshold")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get broker side deduplication for all topics in a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, boolean()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_deduplication(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
-  def namespaces_get_deduplication(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/deduplication")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get deduplicationSnapshotInterval config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_deduplication_snapshot_interval(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_deduplication_snapshot_interval(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/deduplicationSnapshotInterval")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get delayed delivery messages config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.DelayedDeliveryPolicies.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_delayed_delivery_policies(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DelayedDeliveryPolicies.t} | {:error, Tesla.Env.t}
-  def namespaces_get_delayed_delivery_policies(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/delayedDelivery")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.DelayedDeliveryPolicies},
-      {403, false},
-      {404, false},
-      {409, false}
     ])
   end
 
@@ -900,8 +1501,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, PulsarAdmin.Model.DispatchRate.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_dispatch_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
-  def namespaces_get_dispatch_rate(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_dispatch_rate_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_dispatch_rate_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -914,6 +1515,44 @@ defmodule PulsarAdmin.Api.Namespaces do
       {200, PulsarAdmin.Model.DispatchRate},
       {403, false},
       {404, false}
+    ])
+  end
+
+  @doc """
+  Set dispatch-rate throttling for all topics of the namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:body` (DispatchRateImpl): Dispatch rate for all topics of the specified namespace
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_dispatch_rate_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_dispatch_rate_post(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/dispatchRate")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false}
     ])
   end
 
@@ -932,8 +1571,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, boolean()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_encryption_required(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
-  def namespaces_get_encryption_required(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_encryption_required_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_encryption_required_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -946,6 +1585,74 @@ defmodule PulsarAdmin.Api.Namespaces do
       {200, false},
       {403, false},
       {404, false}
+    ])
+  end
+
+  @doc """
+  Message encryption is required or not for all topics in a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (boolean()): Flag defining if message encryption is required
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_encryption_required_post(Tesla.Env.client, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_encryption_required_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/encryptionRequired")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Remove entry filters for namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_entry_filters_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_entry_filters_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/entryFilters")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {412, false}
     ])
   end
 
@@ -964,8 +1671,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, PulsarAdmin.Model.EntryFilters.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_entry_filters_per_topic(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.EntryFilters.t} | {:error, Tesla.Env.t}
-  def namespaces_get_entry_filters_per_topic(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_entry_filters_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.EntryFilters.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_entry_filters_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -978,6 +1685,106 @@ defmodule PulsarAdmin.Api.Namespaces do
       {200, PulsarAdmin.Model.EntryFilters},
       {403, false},
       {404, false}
+    ])
+  end
+
+  @doc """
+  Set entry filters for namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (EntryFilters): entry filters
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_entry_filters_post(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.EntryFilters.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_entry_filters_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/entryFilters")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {400, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get the dump all the policies specified for a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.Policies.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.Policies.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.Policies},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Remove inactive topic policies from a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_inactive_topic_policies_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_inactive_topic_policies_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/inactiveTopicPolicies")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false}
     ])
   end
 
@@ -996,8 +1803,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, PulsarAdmin.Model.InactiveTopicPolicies.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_inactive_topic_policies(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.InactiveTopicPolicies.t} | {:error, Tesla.Env.t}
-  def namespaces_get_inactive_topic_policies(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_inactive_topic_policies_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.InactiveTopicPolicies.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_inactive_topic_policies_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1011,6 +1818,45 @@ defmodule PulsarAdmin.Api.Namespaces do
       {403, false},
       {404, false},
       {409, false}
+    ])
+  end
+
+  @doc """
+  Set inactive topic policies config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:body` (InactiveTopicPolicies): Inactive topic policies for the specified namespace
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_inactive_topic_policies_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_inactive_topic_policies_post(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/inactiveTopicPolicies")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
     ])
   end
 
@@ -1029,8 +1875,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, boolean()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_is_allow_auto_update_schema(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
-  def namespaces_get_is_allow_auto_update_schema(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_is_allow_auto_update_schema_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_is_allow_auto_update_schema_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1044,6 +1890,75 @@ defmodule PulsarAdmin.Api.Namespaces do
       {403, false},
       {404, false},
       {409, false}
+    ])
+  end
+
+  @doc """
+  Update flag of whether allow auto update schema
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (boolean()): Flag of whether to allow auto update schema
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_is_allow_auto_update_schema_post(Tesla.Env.client, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_is_allow_auto_update_schema_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/isAllowAutoUpdateSchema")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+   Set maxConsumersPerSubscription configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_consumers_per_subscription_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_consumers_per_subscription_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxConsumersPerSubscription")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
     ])
   end
 
@@ -1062,8 +1977,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_max_consumers_per_subscription(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_max_consumers_per_subscription(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_max_consumers_per_subscription_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_consumers_per_subscription_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1076,6 +1991,75 @@ defmodule PulsarAdmin.Api.Namespaces do
       {200, false},
       {403, false},
       {404, false}
+    ])
+  end
+
+  @doc """
+   Set maxConsumersPerSubscription configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (integer()): Number of maximum consumers per subscription
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_consumers_per_subscription_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_consumers_per_subscription_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxConsumersPerSubscription")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove maxConsumersPerTopic configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_consumers_per_topic_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_consumers_per_topic_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxConsumersPerTopic")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false}
     ])
   end
 
@@ -1094,8 +2078,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_max_consumers_per_topic(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_max_consumers_per_topic(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_max_consumers_per_topic_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_consumers_per_topic_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1108,6 +2092,75 @@ defmodule PulsarAdmin.Api.Namespaces do
       {200, false},
       {403, false},
       {404, false}
+    ])
+  end
+
+  @doc """
+   Set maxConsumersPerTopic configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (integer()): Number of maximum consumers per topic
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_consumers_per_topic_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_consumers_per_topic_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxConsumersPerTopic")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove maxProducersPerTopic configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_producers_per_topic_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_producers_per_topic_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxProducersPerTopic")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false}
     ])
   end
 
@@ -1126,8 +2179,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_max_producers_per_topic(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_max_producers_per_topic(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_max_producers_per_topic_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_producers_per_topic_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1140,6 +2193,75 @@ defmodule PulsarAdmin.Api.Namespaces do
       {200, false},
       {403, false},
       {404, false}
+    ])
+  end
+
+  @doc """
+   Set maxProducersPerTopic configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (integer()): Number of maximum producers per topic
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_producers_per_topic_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_producers_per_topic_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxProducersPerTopic")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove maxSubscriptionsPerTopic configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_subscriptions_per_topic_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_subscriptions_per_topic_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxSubscriptionsPerTopic")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false}
     ])
   end
 
@@ -1158,12 +2280,80 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_max_subscriptions_per_topic(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_max_subscriptions_per_topic(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_max_subscriptions_per_topic_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_subscriptions_per_topic_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
       |> url("/namespaces/#{tenant}/#{namespace}/maxSubscriptionsPerTopic")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+   Set maxSubscriptionsPerTopic configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (integer()): Number of maximum subscriptions per topic
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_subscriptions_per_topic_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_subscriptions_per_topic_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxSubscriptionsPerTopic")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove maxTopicsPerNamespace config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_topics_per_namespace_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_topics_per_namespace_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxTopicsPerNamespace")
       |> Enum.into([])
 
     connection
@@ -1190,8 +2380,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_max_topics_per_namespace(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_max_topics_per_namespace(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_max_topics_per_namespace_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_topics_per_namespace_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1202,6 +2392,72 @@ defmodule PulsarAdmin.Api.Namespaces do
     |> Connection.request(request)
     |> evaluate_response([
       {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set maxTopicsPerNamespace config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (integer()): Number of maximum topics for specific namespace
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_topics_per_namespace_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_topics_per_namespace_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxTopicsPerNamespace")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Remove maxUnackedMessagesPerConsumer config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_unacked_messages_per_consumer_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_unacked_messages_per_consumer_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxUnackedMessagesPerConsumer")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
       {403, false},
       {404, false}
     ])
@@ -1222,8 +2478,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_max_unacked_messages_per_consumer(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_max_unacked_messages_per_consumer(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_max_unacked_messages_per_consumer_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_unacked_messages_per_consumer_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1234,6 +2490,74 @@ defmodule PulsarAdmin.Api.Namespaces do
     |> Connection.request(request)
     |> evaluate_response([
       {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+   Set maxConsumersPerTopic configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (integer()): Number of maximum unacked messages per consumer
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_unacked_messages_per_consumer_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_unacked_messages_per_consumer_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxUnackedMessagesPerConsumer")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove maxUnackedMessagesPerSubscription config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_max_unacked_messages_per_subscription_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_unacked_messages_per_subscription_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxUnackedMessagesPerSubscription")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
       {403, false},
       {404, false}
     ])
@@ -1254,8 +2578,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_max_unackedmessages_per_subscription(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_max_unackedmessages_per_subscription(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_max_unacked_messages_per_subscription_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_unacked_messages_per_subscription_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1272,40 +2596,43 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Get the allowed clusters for a namespace.
+   Set maxUnackedMessagesPerSubscription configuration on a namespace.
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
   - `tenant` (String.t): 
   - `namespace` (String.t): 
+  - `body` (integer()): Number of maximum unacked messages per subscription
   - `opts` (keyword): Optional parameters
 
   ### Returns
 
-  - `{:ok, [%String{}, ...]}` on success
+  - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_namespace_allowed_clusters(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def namespaces_get_namespace_allowed_clusters(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_max_unacked_messages_per_subscription_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_max_unacked_messages_per_subscription_post(connection, tenant, namespace, body, _opts \\ []) do
     request =
       %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/allowedClusters")
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/maxUnackedMessagesPerSubscription")
+      |> add_param(:body, :body, body)
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
-      {200, []},
+      {204, false},
       {403, false},
       {404, false},
+      {409, false},
       {412, false}
     ])
   end
 
   @doc """
-  Get anti-affinity group of a namespace.
+  Remove message TTL in seconds for namespace
 
   ### Parameters
 
@@ -1316,23 +2643,24 @@ defmodule PulsarAdmin.Api.Namespaces do
 
   ### Returns
 
-  - `{:ok, String.t}` on success
+  - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_namespace_anti_affinity_group(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
-  def namespaces_get_namespace_anti_affinity_group(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_message_ttl_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_message_ttl_delete(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/antiAffinity")
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/messageTTL")
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
-      {200, false},
+      {204, false},
       {403, false},
-      {404, false}
+      {404, false},
+      {412, false}
     ])
   end
 
@@ -1351,8 +2679,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_namespace_message_ttl(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_namespace_message_ttl(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_message_ttl_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_message_ttl_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1369,32 +2697,34 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Get the replication clusters for a namespace.
+  Set message TTL in seconds for namespace
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
   - `tenant` (String.t): 
   - `namespace` (String.t): 
+  - `body` (integer()): TTL in seconds for the specified namespace
   - `opts` (keyword): Optional parameters
 
   ### Returns
 
-  - `{:ok, [%String{}, ...]}` on success
+  - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_namespace_replication_clusters(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def namespaces_get_namespace_replication_clusters(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_message_ttl_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_message_ttl_post(connection, tenant, namespace, body, _opts \\ []) do
     request =
       %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/replication")
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/messageTTL")
+      |> add_param(:body, :body, body)
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
-      {200, []},
+      {204, false},
       {403, false},
       {404, false},
       {412, false}
@@ -1402,7 +2732,7 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Get the resource group attached to the namespace
+  Clear the namespace configured offload deletion lag. The topics in the namespace will fallback to using the default configured deletion lag for the broker
 
   ### Parameters
 
@@ -1413,15 +2743,15 @@ defmodule PulsarAdmin.Api.Namespaces do
 
   ### Returns
 
-  - `{:ok, String.t}` on success
+  - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_namespace_resource_group(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
-  def namespaces_get_namespace_resource_group(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_offload_deletion_lag_ms_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_offload_deletion_lag_ms_delete(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/resourcegroup")
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/offloadDeletionLagMs")
       |> Enum.into([])
 
     connection
@@ -1429,7 +2759,8 @@ defmodule PulsarAdmin.Api.Namespaces do
     |> evaluate_response([
       {200, false},
       {403, false},
-      {404, false}
+      {404, false},
+      {409, false}
     ])
   end
 
@@ -1449,8 +2780,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_offload_deletion_lag(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_offload_deletion_lag(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_offload_deletion_lag_ms_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_offload_deletion_lag_ms_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1463,6 +2794,43 @@ defmodule PulsarAdmin.Api.Namespaces do
       {200, false},
       {403, false},
       {404, false}
+    ])
+  end
+
+  @doc """
+  Set number of milliseconds to wait before deleting a ledger segment which has been offloaded from the Pulsar cluster's local storage (i.e. BookKeeper)
+  A negative value disables the deletion completely.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (integer()): New number of milliseconds to wait before deleting a ledger segment which has been offloaded
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_offload_deletion_lag_ms_put(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_offload_deletion_lag_ms_put(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:put)
+      |> url("/namespaces/#{tenant}/#{namespace}/offloadDeletionLagMs")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
     ])
   end
 
@@ -1481,8 +2849,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, PulsarAdmin.Model.OffloadPolicies.t}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_offload_policies(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.OffloadPolicies.t} | {:error, Tesla.Env.t}
-  def namespaces_get_offload_policies(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_offload_policies_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.OffloadPolicies.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_offload_policies_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1495,6 +2863,42 @@ defmodule PulsarAdmin.Api.Namespaces do
       {200, PulsarAdmin.Model.OffloadPolicies},
       {403, false},
       {404, false}
+    ])
+  end
+
+  @doc """
+  Set offload configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` (OffloadPoliciesImpl): Offload policies for the specified namespace
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_offload_policies_post(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.OffloadPoliciesImpl.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_offload_policies_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/offloadPolicies")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
     ])
   end
 
@@ -1514,8 +2918,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_offload_threshold(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_offload_threshold(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_offload_threshold_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_offload_threshold_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1547,8 +2951,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, integer()}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_get_offload_threshold_in_seconds(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_offload_threshold_in_seconds(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_offload_threshold_in_seconds_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_offload_threshold_in_seconds_get(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:get)
@@ -1565,757 +2969,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Retrieve the permissions for a subscription.
-  Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<String>>. Please refer to this structure for details.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_permission_on_subscription(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_get_permission_on_subscription(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/permissions/subscription")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Retrieve the permissions for a namespace.
-  Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<AuthAction>>. Please refer to this structure for details.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_permissions(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_get_permissions(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/permissions")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get the persistence configuration for a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.PersistencePolicies.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_persistence(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PersistencePolicies.t} | {:error, Tesla.Env.t}
-  def namespaces_get_persistence(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/persistence")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.PersistencePolicies},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get the dump all the policies specified for a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.Policies.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_policies(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.Policies.t} | {:error, Tesla.Env.t}
-  def namespaces_get_policies(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.Policies},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get key value pair properties for a given namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, %{}}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_properties(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_get_properties(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/properties")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, %{}},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get property value for a given key on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `key` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, String.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_property(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
-  def namespaces_get_property(connection, tenant, namespace, key, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/property/#{key}")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get replicator dispatch-rate configured for the namespace, null means replicator dispatch-rate not configured, -1 means msg-dispatch-rate or byte-dispatch-rate not configured in dispatch-rate yet
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.DispatchRateImpl.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_replicator_dispatch_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRateImpl.t} | {:error, Tesla.Env.t}
-  def namespaces_get_replicator_dispatch_rate(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/replicatorDispatchRate")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.DispatchRateImpl},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get retention config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.RetentionPolicies.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_retention(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.RetentionPolicies.t} | {:error, Tesla.Env.t}
-  def namespaces_get_retention(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/retention")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.RetentionPolicies},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  The strategy used to check the compatibility of new schemas, provided by producers, before automatically updating the schema
-  The value AutoUpdateDisabled prevents producers from updating the schema.  If set to AutoUpdateDisabled, schemas must be updated through the REST api
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, String.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_schema_auto_update_compatibility_strategy(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
-  def namespaces_get_schema_auto_update_compatibility_strategy(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/schemaAutoUpdateCompatibilityStrategy")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  The strategy of the namespace schema compatibility 
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, String.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_schema_compatibility_strategy(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
-  def namespaces_get_schema_compatibility_strategy(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/schemaCompatibilityStrategy")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get schema validation enforced flag for namespace.
-  If the flag is set to true, when a producer without a schema attempts to produce to a topic with schema in this namespace, the producer will be failed to connect. PLEASE be carefully on using this, since non-java clients don't support schema.if you enable this setting, it will cause non-java clients failed to produce.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:applied` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, boolean()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_schema_validtion_enforced(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
-  def namespaces_get_schema_validtion_enforced(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :applied => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/schemaValidationEnforced")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get subscribe-rate configured for the namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.SubscribeRate.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_subscribe_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.SubscribeRate.t} | {:error, Tesla.Env.t}
-  def namespaces_get_subscribe_rate(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/subscribeRate")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.SubscribeRate},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get subscription auth mode in a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, String.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_subscription_auth_mode(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
-  def namespaces_get_subscription_auth_mode(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionAuthMode")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get subscription dispatch-rate configured for the namespace, null means subscription dispatch-rate not configured, -1 means msg-dispatch-rate or byte-dispatch-rate not configured in dispatch-rate yet
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.DispatchRate.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_subscription_dispatch_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
-  def namespaces_get_subscription_dispatch_rate(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionDispatchRate")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.DispatchRate},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get the subscription expiration time for the namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, integer()}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_subscription_expiration_time(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
-  def namespaces_get_subscription_expiration_time(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionExpirationTime")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  The set of whether allow subscription types
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_subscription_types_enabled(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def namespaces_get_subscription_types_enabled(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionTypesEnabled")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Get the list of all the namespaces for a certain tenant.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_tenant_namespaces(Tesla.Env.client, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def namespaces_get_tenant_namespaces(connection, tenant, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get hash positions for topics
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `bundle` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:topics` ([String.t]): 
-
-  ### Returns
-
-  - `{:ok, PulsarAdmin.Model.TopicHashPositions.t}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_topic_hash_positions(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.TopicHashPositions.t} | {:error, Tesla.Env.t}
-  def namespaces_get_topic_hash_positions(connection, tenant, namespace, bundle, opts \\ []) do
-    optional_params = %{
-      :topics => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}/topicHashPositions")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, PulsarAdmin.Model.TopicHashPositions},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Get the list of all the topics under a certain namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:mode` (String.t): 
-    - `:includeSystemTopic` (boolean()): Include system topic
-
-  ### Returns
-
-  - `{:ok, [%String{}, ...]}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_get_topics(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
-  def namespaces_get_topics(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :mode => :query,
-      :includeSystemTopic => :query
-    }
-
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/topics")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, []},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Grant a new permission to a role on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `role` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:body` ([String.t]): List of permissions for the specified role
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_grant_permission_on_namespace(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_grant_permission_on_namespace(connection, tenant, namespace, role, opts \\ []) do
-    optional_params = %{
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/permissions/#{role}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {501, false}
-    ])
-  end
-
-  @doc """
-  Enable or disable broker side deduplication for all topics in a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (boolean()): Flag for disabling or enabling broker side deduplication for all topics in the specified namespace
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_modify_deduplication(Tesla.Env.client, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_modify_deduplication(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/deduplication")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Message encryption is required or not for all topics in a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (boolean()): Flag defining if message encryption is required
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_modify_encryption_required(Tesla.Env.client, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_modify_encryption_required(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/encryptionRequired")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove override of broker's allowAutoSubscriptionCreation in a namespace
+  Set maximum number of seconds stored on the pulsar cluster for a topic, before the broker will start offloading to longterm storage
+  A negative value disables automatic offloading
 
   ### Parameters
 
@@ -2329,1723 +2984,13 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_remove_auto_subscription_creation(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_auto_subscription_creation(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/autoSubscriptionCreation")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Remove override of broker's allowAutoTopicCreation in a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_auto_topic_creation(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_auto_topic_creation(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/autoTopicCreation")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Remove a backlog quota policy from a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:backlogQuotaType` (String.t): 
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_backlog_quota(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_backlog_quota(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :backlogQuotaType => :query
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/backlogQuota")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove broker side deduplication for all topics in a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_deduplication(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_deduplication(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/deduplication")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Delete delayed delivery messages config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_delayed_delivery_policies(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_delayed_delivery_policies(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/delayedDelivery")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Remove inactive topic policies from a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_inactive_topic_policies(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_inactive_topic_policies(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/inactiveTopicPolicies")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-   Set maxConsumersPerSubscription configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_max_consumers_per_subscription(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_max_consumers_per_subscription(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxConsumersPerSubscription")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Remove maxConsumersPerTopic configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_max_consumers_per_topic(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_max_consumers_per_topic(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxConsumersPerTopic")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove maxProducersPerTopic configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_max_producers_per_topic(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_max_producers_per_topic(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxProducersPerTopic")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove maxSubscriptionsPerTopic configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_max_subscriptions_per_topic(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_max_subscriptions_per_topic(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxSubscriptionsPerTopic")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove maxUnackedMessagesPerConsumer config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_max_unackedmessages_per_consumer(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_max_unackedmessages_per_consumer(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxUnackedMessagesPerConsumer")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Remove maxUnackedMessagesPerSubscription config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_max_unackedmessages_per_subscription(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_max_unackedmessages_per_subscription(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxUnackedMessagesPerSubscription")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Remove anti-affinity group of a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_namespace_anti_affinity_group(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_namespace_anti_affinity_group(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/antiAffinity")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Remove entry filters for namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_namespace_entry_filters(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_namespace_entry_filters(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/entryFilters")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Remove message TTL in seconds for namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_namespace_message_ttl(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_namespace_message_ttl(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/messageTTL")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Delete resourcegroup for a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_namespace_resource_group(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_namespace_resource_group(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/resourcegroup")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-   Set offload configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_offload_policies(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_offload_policies(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/removeOffloadPolicies")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Remove property value for a given key on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `key` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_property(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_property(connection, tenant, namespace, key, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/property/#{key}")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Remove replicator dispatch-rate throttling for all topics of the namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_replicator_dispatch_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_replicator_dispatch_rate(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/replicatorDispatchRate")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false}
-    ])
-  end
-
-  @doc """
-   Remove retention configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:body` (RetentionPolicies): Retention policies for the specified namespace
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_retention(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_retention(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/retention")
-      |> add_optional_params(optional_params, opts)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Remove subscription expiration time for namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_subscription_expiration_time(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_subscription_expiration_time(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionExpirationTime")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-   Remove subscription types enabled on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_remove_subscription_types_enabled(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_remove_subscription_types_enabled(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionTypesEnabled")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Revoke all permissions to a role on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `role` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_revoke_permissions_on_namespace(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_revoke_permissions_on_namespace(connection, tenant, namespace, role, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/permissions/#{role}")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Trigger the scan of offloaded Ledgers on the LedgerOffloader for the given namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_scan_offloaded_ledgers(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_scan_offloaded_ledgers(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:get)
-      |> url("/namespaces/#{tenant}/#{namespace}/scanOffloadedLedgers")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Override broker's allowAutoSubscriptionCreation setting for a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:body` (AutoSubscriptionCreationOverride): Settings for automatic subscription creation
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_auto_subscription_creation(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_auto_subscription_creation(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/autoSubscriptionCreation")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {400, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Override broker's allowAutoTopicCreation setting for a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (AutoTopicCreationOverride): Settings for automatic topic creation
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_auto_topic_creation(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.AutoTopicCreationOverride.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_auto_topic_creation(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/autoTopicCreation")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {400, false},
-      {403, false},
-      {404, false},
-      {406, false}
-    ])
-  end
-
-  @doc """
-   Set a backlog quota for all the topics on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:backlogQuotaType` (String.t): 
-    - `:body` (BacklogQuota): Backlog quota for all topics of the specified namespace
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_backlog_quota(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_backlog_quota(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :backlogQuotaType => :query,
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/backlogQuota")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set the bookie-affinity-group to namespace-persistent policy.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:body` (BookieAffinityGroupData): Bookie affinity group for the specified namespace
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_bookie_affinity_group(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_bookie_affinity_group(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/persistence/bookieAffinity")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {307, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-  Set maximum number of uncompacted bytes in a topic before compaction is triggered.
-  The backlog size is compared to the threshold periodically. A threshold of 0 disabled automatic compaction
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): Maximum number of uncompacted bytes in a topic of the specified namespace
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_compaction_threshold(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_compaction_threshold(connection, tenant, namespace, body, _opts \\ []) do
+  @spec namespaces_tenant_namespace_offload_threshold_in_seconds_put(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_offload_threshold_in_seconds_put(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:put)
-      |> url("/namespaces/#{tenant}/#{namespace}/compactionThreshold")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set deduplicationSnapshotInterval config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): Interval to take deduplication snapshot per topic
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_deduplication_snapshot_interval(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_deduplication_snapshot_interval(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/deduplicationSnapshotInterval")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set delayed delivery messages config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:body` (DelayedDeliveryPolicies): Delayed delivery policies for the specified namespace
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_delayed_delivery_policies(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_delayed_delivery_policies(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/delayedDelivery")
-      |> add_optional_params(optional_params, opts)
+      |> url("/namespaces/#{tenant}/#{namespace}/offloadThresholdInSeconds")
       |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set dispatch-rate throttling for all topics of the namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:body` (DispatchRateImpl): Dispatch rate for all topics of the specified namespace
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_dispatch_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_dispatch_rate(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/dispatchRate")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false}
-    ])
-  end
-
-  @doc """
-  Set entry filters for namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (EntryFilters): entry filters
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_entry_filters_per_topic(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.EntryFilters.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_entry_filters_per_topic(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/entryFilters")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {400, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set inactive topic policies config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:body` (InactiveTopicPolicies): Inactive topic policies for the specified namespace
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_inactive_topic_policies(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_inactive_topic_policies(connection, tenant, namespace, opts \\ []) do
-    optional_params = %{
-      :body => :body
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/inactiveTopicPolicies")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Set maxTopicsPerNamespace config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): Number of maximum topics for specific namespace
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_inactive_topic_policies_0(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_inactive_topic_policies_0(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxTopicsPerNamespace")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Remove maxTopicsPerNamespace config on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_inactive_topic_policies_1(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_inactive_topic_policies_1(connection, tenant, namespace, _opts \\ []) do
-    request =
-      %{}
-      |> method(:delete)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxTopicsPerNamespace")
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Update flag of whether allow auto update schema
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (boolean()): Flag of whether to allow auto update schema
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_is_allow_auto_update_schema(Tesla.Env.client, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_is_allow_auto_update_schema(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/isAllowAutoUpdateSchema")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {409, false}
-    ])
-  end
-
-  @doc """
-   Set maxConsumersPerSubscription configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): Number of maximum consumers per subscription
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_max_consumers_per_subscription(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_max_consumers_per_subscription(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxConsumersPerSubscription")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-   Set maxConsumersPerTopic configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): Number of maximum consumers per topic
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_max_consumers_per_topic(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_max_consumers_per_topic(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxConsumersPerTopic")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-   Set maxProducersPerTopic configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): Number of maximum producers per topic
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_max_producers_per_topic(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_max_producers_per_topic(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxProducersPerTopic")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-   Set maxSubscriptionsPerTopic configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): Number of maximum subscriptions per topic
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_max_subscriptions_per_topic(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_max_subscriptions_per_topic(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxSubscriptionsPerTopic")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-   Set maxConsumersPerTopic configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): Number of maximum unacked messages per consumer
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_max_unacked_messages_per_consumer(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_max_unacked_messages_per_consumer(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxUnackedMessagesPerConsumer")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-   Set maxUnackedMessagesPerSubscription configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): Number of maximum unacked messages per subscription
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_max_unacked_messages_per_subscription(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_max_unacked_messages_per_subscription(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/maxUnackedMessagesPerSubscription")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set the allowed clusters for a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` ([String.t]): List of allowed clusters
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_namespace_allowed_clusters(Tesla.Env.client, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_namespace_allowed_clusters(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/allowedClusters")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {400, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set anti-affinity group for a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (String.t): Anti-affinity group for the specified namespace
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_namespace_anti_affinity_group(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_namespace_anti_affinity_group(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/antiAffinity")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set message TTL in seconds for namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): TTL in seconds for the specified namespace
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_namespace_message_ttl(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_namespace_message_ttl(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/messageTTL")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set the replication clusters for a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` ([String.t]): List of replication clusters
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_namespace_replication_clusters(Tesla.Env.client, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_namespace_replication_clusters(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/replication")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set resourcegroup for a namespace
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `resourcegroup` (String.t): 
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_namespace_resource_group(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_namespace_resource_group(connection, tenant, namespace, resourcegroup, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/resourcegroup/#{resourcegroup}")
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set number of milliseconds to wait before deleting a ledger segment which has been offloaded from the Pulsar cluster's local storage (i.e. BookKeeper)
-  A negative value disables the deletion completely.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (integer()): New number of milliseconds to wait before deleting a ledger segment which has been offloaded
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_offload_deletion_lag(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_offload_deletion_lag(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:put)
-      |> url("/namespaces/#{tenant}/#{namespace}/offloadDeletionLagMs")
-      |> add_param(:body, :body, body)
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {200, false},
-      {403, false},
-      {404, false},
-      {409, false},
-      {412, false}
-    ])
-  end
-
-  @doc """
-  Set offload configuration on a namespace.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `body` (OffloadPoliciesImpl): Offload policies for the specified namespace
-  - `opts` (keyword): Optional parameters
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_set_offload_policies(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.OffloadPoliciesImpl.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_offload_policies(connection, tenant, namespace, body, _opts \\ []) do
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/offloadPolicies")
-      |> add_param(:body, :body, body)
       |> Enum.into([])
 
     connection
@@ -4076,8 +3021,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_offload_threshold(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_offload_threshold(connection, tenant, namespace, body, _opts \\ []) do
+  @spec namespaces_tenant_namespace_offload_threshold_put(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_offload_threshold_put(connection, tenant, namespace, body, _opts \\ []) do
     request =
       %{}
       |> method(:put)
@@ -4097,8 +3042,191 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Set maximum number of seconds stored on the pulsar cluster for a topic, before the broker will start offloading to longterm storage
-  A negative value disables automatic offloading
+  Retrieve the permissions for a namespace.
+  Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<AuthAction>>. Please refer to this structure for details.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_permissions_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_permissions_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/permissions")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Revoke all permissions to a role on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `role` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_permissions_role_delete(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_permissions_role_delete(connection, tenant, namespace, role, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/permissions/#{role}")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Grant a new permission to a role on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `role` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:body` ([String.t]): List of permissions for the specified role
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_permissions_role_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_permissions_role_post(connection, tenant, namespace, role, opts \\ []) do
+    optional_params = %{
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/permissions/#{role}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {501, false}
+    ])
+  end
+
+  @doc """
+  Retrieve the permissions for a subscription.
+  Returns a nested map structure which Swagger does not fully support for display. Structure: Map<String, Set<String>>. Please refer to this structure for details.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_permissions_subscription_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_permissions_subscription_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/permissions/subscription")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Set the bookie-affinity-group to namespace-persistent policy.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:body` (BookieAffinityGroupData): Bookie affinity group for the specified namespace
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_persistence_bookie_affinity_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_persistence_bookie_affinity_post(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/persistence/bookieAffinity")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {307, false},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  Delete the persistence configuration for all topics on a namespace
 
   ### Parameters
 
@@ -4112,23 +3240,52 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_offload_threshold_in_seconds(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_offload_threshold_in_seconds(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_persistence_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_persistence_delete(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
-      |> method(:put)
-      |> url("/namespaces/#{tenant}/#{namespace}/offloadThresholdInSeconds")
-      |> ensure_body()
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/persistence")
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
       {204, false},
+      {403, false}
+    ])
+  end
+
+  @doc """
+  Get the persistence configuration for a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.PersistencePolicies.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_persistence_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.PersistencePolicies.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_persistence_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/persistence")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.PersistencePolicies},
       {403, false},
       {404, false},
-      {409, false},
-      {412, false}
+      {409, false}
     ])
   end
 
@@ -4148,8 +3305,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_persistence(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.PersistencePolicies.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_persistence(connection, tenant, namespace, body, _opts \\ []) do
+  @spec namespaces_tenant_namespace_persistence_post(Tesla.Env.client, String.t, String.t, PulsarAdmin.Model.PersistencePolicies.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_persistence_post(connection, tenant, namespace, body, _opts \\ []) do
     request =
       %{}
       |> method(:post)
@@ -4169,6 +3326,70 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
+  Clear properties on a given namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_properties_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_properties_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/properties")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get key value pair properties for a given namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, %{}}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_properties_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, map()} | {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_properties_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/properties")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, %{}},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
   Put key value pairs property on a namespace.
 
   ### Parameters
@@ -4184,8 +3405,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_properties(Tesla.Env.client, String.t, String.t, %{optional(String.t) => String.t}, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_properties(connection, tenant, namespace, body, _opts \\ []) do
+  @spec namespaces_tenant_namespace_properties_put(Tesla.Env.client, String.t, String.t, %{optional(String.t) => String.t}, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_properties_put(connection, tenant, namespace, body, _opts \\ []) do
     request =
       %{}
       |> method(:put)
@@ -4197,6 +3418,72 @@ defmodule PulsarAdmin.Api.Namespaces do
     |> Connection.request(request)
     |> evaluate_response([
       {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Remove property value for a given key on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `key` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_property_key_delete(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_property_key_delete(connection, tenant, namespace, key, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/property/#{key}")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get property value for a given key on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `key` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, String.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_property_key_get(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_property_key_get(connection, tenant, namespace, key, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/property/#{key}")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
       {403, false},
       {404, false}
     ])
@@ -4219,8 +3506,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_property(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_property(connection, tenant, namespace, key, value, _opts \\ []) do
+  @spec namespaces_tenant_namespace_property_key_value_put(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_property_key_value_put(connection, tenant, namespace, key, value, _opts \\ []) do
     request =
       %{}
       |> method(:put)
@@ -4232,6 +3519,213 @@ defmodule PulsarAdmin.Api.Namespaces do
     |> Connection.request(request)
     |> evaluate_response([
       {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Creates a new namespace with the specified policies
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:body` (Policies): Policies for the namespace
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_put(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_put(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:put)
+      |> url("/namespaces/#{tenant}/#{namespace}")
+      |> add_optional_params(optional_params, opts)
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+   Set offload configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_remove_offload_policies_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_remove_offload_policies_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/removeOffloadPolicies")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Get the replication clusters for a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_replication_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_replication_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/replication")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {403, false},
+      {404, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Set the replication clusters for a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `body` ([String.t]): List of replication clusters
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_replication_post(Tesla.Env.client, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_replication_post(connection, tenant, namespace, body, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/replication")
+      |> add_param(:body, :body, body)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Remove replicator dispatch-rate throttling for all topics of the namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_replicator_dispatch_rate_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_replicator_dispatch_rate_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/replicatorDispatchRate")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false}
+    ])
+  end
+
+  @doc """
+  Get replicator dispatch-rate configured for the namespace, null means replicator dispatch-rate not configured, -1 means msg-dispatch-rate or byte-dispatch-rate not configured in dispatch-rate yet
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.DispatchRateImpl.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_replicator_dispatch_rate_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRateImpl.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_replicator_dispatch_rate_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/replicatorDispatchRate")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.DispatchRateImpl},
       {403, false},
       {404, false}
     ])
@@ -4253,8 +3747,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_replicator_dispatch_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_replicator_dispatch_rate(connection, tenant, namespace, opts \\ []) do
+  @spec namespaces_tenant_namespace_replicator_dispatch_rate_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_replicator_dispatch_rate_post(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
       :body => :body
     }
@@ -4276,6 +3770,178 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
+  Delete resourcegroup for a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_resourcegroup_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_resourcegroup_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/resourcegroup")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Get the resource group attached to the namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, String.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_resourcegroup_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_resourcegroup_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/resourcegroup")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Set resourcegroup for a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `resourcegroup` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_resourcegroup_resourcegroup_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_resourcegroup_resourcegroup_post(connection, tenant, namespace, resourcegroup, _opts \\ []) do
+    request =
+      %{}
+      |> method(:post)
+      |> url("/namespaces/#{tenant}/#{namespace}/resourcegroup/#{resourcegroup}")
+      |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+   Remove retention configuration on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:body` (RetentionPolicies): Retention policies for the specified namespace
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_retention_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_retention_delete(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :body => :body
+    }
+
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/retention")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {409, false},
+      {412, false}
+    ])
+  end
+
+  @doc """
+  Get retention config on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.RetentionPolicies.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_retention_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.RetentionPolicies.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_retention_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/retention")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.RetentionPolicies},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
    Set retention configuration on a namespace.
 
   ### Parameters
@@ -4291,8 +3957,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_retention(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_retention(connection, tenant, namespace, opts \\ []) do
+  @spec namespaces_tenant_namespace_retention_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_retention_post(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
       :body => :body
     }
@@ -4317,6 +3983,72 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
+  Trigger the scan of offloaded Ledgers on the LedgerOffloader for the given namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_scan_offloaded_ledgers_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_scan_offloaded_ledgers_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/scanOffloadedLedgers")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  The strategy used to check the compatibility of new schemas, provided by producers, before automatically updating the schema
+  The value AutoUpdateDisabled prevents producers from updating the schema.  If set to AutoUpdateDisabled, schemas must be updated through the REST api
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, String.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_schema_auto_update_compatibility_strategy_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_schema_auto_update_compatibility_strategy_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/schemaAutoUpdateCompatibilityStrategy")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
   Update the strategy used to check the compatibility of new schemas, provided by producers, before automatically updating the schema
   The value AutoUpdateDisabled prevents producers from updating the schema.  If set to AutoUpdateDisabled, schemas must be updated through the REST api
 
@@ -4333,8 +4065,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_schema_auto_update_compatibility_strategy(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_schema_auto_update_compatibility_strategy(connection, tenant, namespace, opts \\ []) do
+  @spec namespaces_tenant_namespace_schema_auto_update_compatibility_strategy_put(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_schema_auto_update_compatibility_strategy_put(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
       :body => :body
     }
@@ -4345,6 +4077,39 @@ defmodule PulsarAdmin.Api.Namespaces do
       |> url("/namespaces/#{tenant}/#{namespace}/schemaAutoUpdateCompatibilityStrategy")
       |> add_optional_params(optional_params, opts)
       |> ensure_body()
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  The strategy of the namespace schema compatibility 
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, String.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_schema_compatibility_strategy_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_schema_compatibility_strategy_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/schemaCompatibilityStrategy")
       |> Enum.into([])
 
     connection
@@ -4373,8 +4138,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_schema_compatibility_strategy(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_schema_compatibility_strategy(connection, tenant, namespace, opts \\ []) do
+  @spec namespaces_tenant_namespace_schema_compatibility_strategy_put(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_schema_compatibility_strategy_put(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
       :body => :body
     }
@@ -4398,6 +4163,45 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
+  Get schema validation enforced flag for namespace.
+  If the flag is set to true, when a producer without a schema attempts to produce to a topic with schema in this namespace, the producer will be failed to connect. PLEASE be carefully on using this, since non-java clients don't support schema.if you enable this setting, it will cause non-java clients failed to produce.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+    - `:applied` (boolean()): 
+
+  ### Returns
+
+  - `{:ok, boolean()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_schema_validation_enforced_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, boolean()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_schema_validation_enforced_get(connection, tenant, namespace, opts \\ []) do
+    optional_params = %{
+      :applied => :query
+    }
+
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/schemaValidationEnforced")
+      |> add_optional_params(optional_params, opts)
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
   Set schema validation enforced flag on namespace.
   If the flag is set to true, when a producer without a schema attempts to produce to a topic with schema in this namespace, the producer will be failed to connect. PLEASE be carefully on using this, since non-java clients don't support schema.if you enable this setting, it will cause non-java clients failed to produce.
 
@@ -4414,8 +4218,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_schema_validation_enforced(Tesla.Env.client, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_schema_validation_enforced(connection, tenant, namespace, body, _opts \\ []) do
+  @spec namespaces_tenant_namespace_schema_validation_enforced_post(Tesla.Env.client, String.t, String.t, boolean(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_schema_validation_enforced_post(connection, tenant, namespace, body, _opts \\ []) do
     request =
       %{}
       |> method(:post)
@@ -4430,6 +4234,69 @@ defmodule PulsarAdmin.Api.Namespaces do
       {403, false},
       {404, false},
       {412, false}
+    ])
+  end
+
+  @doc """
+  Delete subscribe-rate throttling for all topics of the namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_subscribe_rate_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscribe_rate_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/subscribeRate")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false}
+    ])
+  end
+
+  @doc """
+  Get subscribe-rate configured for the namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.SubscribeRate.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_subscribe_rate_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.SubscribeRate.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscribe_rate_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/subscribeRate")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.SubscribeRate},
+      {403, false},
+      {404, false}
     ])
   end
 
@@ -4449,8 +4316,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_subscribe_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_subscribe_rate(connection, tenant, namespace, opts \\ []) do
+  @spec namespaces_tenant_namespace_subscribe_rate_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscribe_rate_post(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
       :body => :body
     }
@@ -4472,6 +4339,38 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
+  Get subscription auth mode in a namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, String.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_subscription_auth_mode_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, String.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_auth_mode_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionAuthMode")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
    Set a subscription auth mode for all the topics on a namespace.
 
   ### Parameters
@@ -4487,8 +4386,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_subscription_auth_mode(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_subscription_auth_mode(connection, tenant, namespace, opts \\ []) do
+  @spec namespaces_tenant_namespace_subscription_auth_mode_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_auth_mode_post(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
       :body => :body
     }
@@ -4512,6 +4411,69 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
+  Delete Subscription dispatch-rate throttling for all topics of the namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_subscription_dispatch_rate_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_dispatch_rate_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionDispatchRate")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false}
+    ])
+  end
+
+  @doc """
+  Get subscription dispatch-rate configured for the namespace, null means subscription dispatch-rate not configured, -1 means msg-dispatch-rate or byte-dispatch-rate not configured in dispatch-rate yet
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, PulsarAdmin.Model.DispatchRate.t}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_subscription_dispatch_rate_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, PulsarAdmin.Model.DispatchRate.t} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_dispatch_rate_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionDispatchRate")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, PulsarAdmin.Model.DispatchRate},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
   Set Subscription dispatch-rate throttling for all topics of the namespace
 
   ### Parameters
@@ -4527,8 +4489,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_subscription_dispatch_rate(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_subscription_dispatch_rate(connection, tenant, namespace, opts \\ []) do
+  @spec namespaces_tenant_namespace_subscription_dispatch_rate_post(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_dispatch_rate_post(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
       :body => :body
     }
@@ -4550,6 +4512,70 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
+  Remove subscription expiration time for namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_subscription_expiration_time_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_expiration_time_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionExpirationTime")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {204, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
+  Get the subscription expiration time for the namespace
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, integer()}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_subscription_expiration_time_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, integer()} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_expiration_time_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionExpirationTime")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, false},
+      {403, false},
+      {404, false}
+    ])
+  end
+
+  @doc """
   Set subscription expiration time in minutes for namespace
 
   ### Parameters
@@ -4565,8 +4591,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_subscription_expiration_time(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_subscription_expiration_time(connection, tenant, namespace, body, _opts \\ []) do
+  @spec namespaces_tenant_namespace_subscription_expiration_time_post(Tesla.Env.client, String.t, String.t, integer(), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_expiration_time_post(connection, tenant, namespace, body, _opts \\ []) do
     request =
       %{}
       |> method(:post)
@@ -4581,6 +4607,71 @@ defmodule PulsarAdmin.Api.Namespaces do
       {403, false},
       {404, false},
       {412, false}
+    ])
+  end
+
+  @doc """
+   Remove subscription types enabled on a namespace.
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, nil}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_subscription_types_enabled_delete(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_types_enabled_delete(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:delete)
+      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionTypesEnabled")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {403, false},
+      {404, false},
+      {409, false}
+    ])
+  end
+
+  @doc """
+  The set of whether allow subscription types
+
+  ### Parameters
+
+  - `connection` (PulsarAdmin.Connection): Connection to server
+  - `tenant` (String.t): 
+  - `namespace` (String.t): 
+  - `opts` (keyword): Optional parameters
+
+  ### Returns
+
+  - `{:ok, [%String{}, ...]}` on success
+  - `{:error, Tesla.Env.t}` on failure
+  """
+  @spec namespaces_tenant_namespace_subscription_types_enabled_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_types_enabled_get(connection, tenant, namespace, _opts \\ []) do
+    request =
+      %{}
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/subscriptionTypesEnabled")
+      |> Enum.into([])
+
+    connection
+    |> Connection.request(request)
+    |> evaluate_response([
+      {200, []},
+      {403, false},
+      {404, false},
+      {409, false}
     ])
   end
 
@@ -4600,8 +4691,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_set_subscription_types_enabled(Tesla.Env.client, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_set_subscription_types_enabled(connection, tenant, namespace, body, _opts \\ []) do
+  @spec namespaces_tenant_namespace_subscription_types_enabled_post(Tesla.Env.client, String.t, String.t, list(String.t), keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_subscription_types_enabled_post(connection, tenant, namespace, body, _opts \\ []) do
     request =
       %{}
       |> method(:post)
@@ -4620,47 +4711,40 @@ defmodule PulsarAdmin.Api.Namespaces do
   end
 
   @doc """
-  Split a namespace bundle
+  Get the list of all the topics under a certain namespace.
 
   ### Parameters
 
   - `connection` (PulsarAdmin.Connection): Connection to server
   - `tenant` (String.t): 
   - `namespace` (String.t): 
-  - `bundle` (String.t): 
   - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): 
-    - `:unload` (boolean()): 
-    - `:splitAlgorithmName` (String.t): 
-    - `:body` ([integer()]): splitBoundaries
+    - `:mode` (String.t): 
+    - `:includeSystemTopic` (boolean()): Include system topic
 
   ### Returns
 
-  - `{:ok, nil}` on success
+  - `{:ok, [%String{}, ...]}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_split_namespace_bundle(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_split_namespace_bundle(connection, tenant, namespace, bundle, opts \\ []) do
+  @spec namespaces_tenant_namespace_topics_get(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:ok, [String.t]} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_topics_get(connection, tenant, namespace, opts \\ []) do
     optional_params = %{
-      :authoritative => :query,
-      :unload => :query,
-      :splitAlgorithmName => :query,
-      :body => :body
+      :mode => :query,
+      :includeSystemTopic => :query
     }
 
     request =
       %{}
-      |> method(:put)
-      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}/split")
+      |> method(:get)
+      |> url("/namespaces/#{tenant}/#{namespace}/topics")
       |> add_optional_params(optional_params, opts)
-      |> ensure_body()
       |> Enum.into([])
 
     connection
     |> Connection.request(request)
     |> evaluate_response([
-      {204, false},
-      {307, false},
+      {200, []},
       {403, false},
       {404, false}
     ])
@@ -4682,8 +4766,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_unload_namespace(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_unload_namespace(connection, tenant, namespace, _opts \\ []) do
+  @spec namespaces_tenant_namespace_unload_put(Tesla.Env.client, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_unload_put(connection, tenant, namespace, _opts \\ []) do
     request =
       %{}
       |> method(:put)
@@ -4699,49 +4783,6 @@ defmodule PulsarAdmin.Api.Namespaces do
       {403, false},
       {404, false},
       {412, false}
-    ])
-  end
-
-  @doc """
-  Unload a namespace bundle
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `bundle` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): 
-    - `:destinationBroker` (String.t): 
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_unload_namespace_bundle(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_unload_namespace_bundle(connection, tenant, namespace, bundle, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query,
-      :destinationBroker => :query
-    }
-
-    request =
-      %{}
-      |> method(:put)
-      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}/unload")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {307, false},
-      {403, false},
-      {404, false}
     ])
   end
 
@@ -4762,8 +4803,8 @@ defmodule PulsarAdmin.Api.Namespaces do
   - `{:ok, nil}` on success
   - `{:error, Tesla.Env.t}` on failure
   """
-  @spec namespaces_unsubscribe_namespace(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_unsubscribe_namespace(connection, tenant, namespace, subscription, opts \\ []) do
+  @spec namespaces_tenant_namespace_unsubscribe_subscription_post(Tesla.Env.client, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
+  def namespaces_tenant_namespace_unsubscribe_subscription_post(connection, tenant, namespace, subscription, opts \\ []) do
     optional_params = %{
       :authoritative => :query
     }
@@ -4772,47 +4813,6 @@ defmodule PulsarAdmin.Api.Namespaces do
       %{}
       |> method(:post)
       |> url("/namespaces/#{tenant}/#{namespace}/unsubscribe/#{subscription}")
-      |> add_optional_params(optional_params, opts)
-      |> ensure_body()
-      |> Enum.into([])
-
-    connection
-    |> Connection.request(request)
-    |> evaluate_response([
-      {204, false},
-      {403, false},
-      {404, false}
-    ])
-  end
-
-  @doc """
-  Unsubscribes the given subscription on all topics on a namespace bundle.
-
-  ### Parameters
-
-  - `connection` (PulsarAdmin.Connection): Connection to server
-  - `tenant` (String.t): 
-  - `namespace` (String.t): 
-  - `subscription` (String.t): 
-  - `bundle` (String.t): 
-  - `opts` (keyword): Optional parameters
-    - `:authoritative` (boolean()): 
-
-  ### Returns
-
-  - `{:ok, nil}` on success
-  - `{:error, Tesla.Env.t}` on failure
-  """
-  @spec namespaces_unsubscribe_namespace_bundle(Tesla.Env.client, String.t, String.t, String.t, String.t, keyword()) :: {:ok, nil} | {:error, Tesla.Env.t}
-  def namespaces_unsubscribe_namespace_bundle(connection, tenant, namespace, subscription, bundle, opts \\ []) do
-    optional_params = %{
-      :authoritative => :query
-    }
-
-    request =
-      %{}
-      |> method(:post)
-      |> url("/namespaces/#{tenant}/#{namespace}/#{bundle}/unsubscribe/#{subscription}")
       |> add_optional_params(optional_params, opts)
       |> ensure_body()
       |> Enum.into([])
